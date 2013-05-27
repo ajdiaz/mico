@@ -15,9 +15,6 @@ apt_upgrade: true
 def main(*args):
     "Deploy the entire nosy production environment"
 
-    import pickle
-    pickle.dump(create_security,open("/tmp/caca","w"))
-
     for arg in args:
         create_security(arg)
         create_instance(arg)
