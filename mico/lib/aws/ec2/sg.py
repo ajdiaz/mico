@@ -64,11 +64,9 @@ def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_p
 
 
     if isinstance(source, list):
-        for s in source:
-            yield _add_source(s, ret)
+        return [ _add_source(x, ret) for x in source ]
     else:
-        yield _add_source(source, ret)
-
+        return [ _add_source(source, ret)]
 
 def sg_ensure(name, description, vpc_id=None, rules=[], force=False):
     """Create a new EC2 security group according with parameters passed
