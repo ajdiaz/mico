@@ -5,7 +5,6 @@
 """Hooks are useful toy for fabric. Current versions of fabric do not
 support post action hooks."""
 
-import traceback
 from functools import wraps
 
 import mico

@@ -70,7 +70,8 @@ def eip_release(public_ip=None, allocation_ip=None):
     :rtype: bool
     :return: True if successful
     """
-    _x = ec2_connect().release_address(public_ip, allocation_id)
+    connection = ec2_connect()
+    _x = connection.release_address(public_ip, allocation_id)
     mico.output.info("released EIP: %s" % public_ip)
     return _x
 
@@ -83,6 +84,7 @@ def eip_attach(address, instance):
     :type instace: instance object
     :param instance: the instance to be attached to.
     """
+    connection = ec2_connect()
     _x = connection.associate_address(instance.id, address)
     mico.output.info("attached EIP %s to %s" % (
         address,
