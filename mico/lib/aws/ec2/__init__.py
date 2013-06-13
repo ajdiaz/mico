@@ -231,6 +231,7 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
             instance.id
         ))
         connection.associate_address(instance.id, address)
+        time.sleep(2) # amazon needs time to think about how to associate an address.
 
     if getattr(instance,"ip_address", None) and instance.ip_address:
         mico.output.info("created instance: %s [%s]" % (instance.id, instance.ip_address))
