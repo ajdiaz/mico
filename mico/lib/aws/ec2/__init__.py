@@ -273,28 +273,15 @@ def ec2_list(*args):
         ec2_list('host-*', '*database*')
     """
     conn = ec2_connect()
-    chain = itertools.chain.from_iterable
     args = args or ('*',)
 
-    for instance in chain([res.instances for res in conn.get_all_instances()]):
-        if args:
+    for reservation in conn.get_all_instances():
+        for instance in reservation.instances:
             if "Name" in instance.tags:
                 for arg in args:
                     if fnmatch(instance.tags["Name"], arg):
                         instance.name = instance.tags["Name"]
-                        instance.secgroups = ",".join(map(
-                            lambda x:x.name,
-                            instance.groups
-                        ))
-                        yield instance.__dict__
-        else:
-            instance.name = instance.tags.get("Name", "None")
-            instance.secgroups = ",".join(map(
-                lambda x:x.name,
-                instance.groups
-            ))
-            yield instance.__dict__
-
+                        yield instance
 
 ec2_launch = ec2_create = ec2_run = ec2_ensure
 

@@ -58,7 +58,9 @@ dump_keys = [
         'last_updated','metric',
         'period', 'set_state',
         'state_reason', 'state_value', 'statistic',
-        'threshold', 'total_instances'
+        'threshold', 'total_instances',
+         '_state', 'root_device_type', 'instance_type',
+         'image_id', '_placement', 'secgroups', 'ip_address',
 ]
 
 prompt_usr = os.environ.get("MICO_PS1", None) or "[0;1mmico[1;34m:[0;0m "
@@ -108,17 +110,43 @@ def debug(message):
 def mute(*args, **kwargs):
     pass
 
+def _vars(obj):
+    """Internal emulation for builtin var. Not all boto objects provides
+    __dict__ function.
+    """
+
+    if hasattr(obj, "__dict__"):
+        return vars(obj)
+
+    return { k: getattr(obj,k) for k in filter(callable, dir(obj)) }
+
+def _str(obj):
+    if hasattr(obj, "name"):
+        return obj.name
+    elif hasattr(obj, "id"):
+        return obj.id
+    elif hasattr(obj, "volume_id"):
+        return obj.volume_id
+    else:
+        return str(obj)
+
 def dump(obj, layout="horizontal", color=True):
     if color:
         s = "[33;1m%s[0;0m:" % getattr(obj, "name","None")
     else:
         s = "%s:" % getattr(obj, "name","None")
 
-    v = vars(obj)
+    v = _vars(obj)
     for key in v:
         if key in dump_keys or "debug" in env.loglevel:
+            if v[key] is None:
+                continue
             if isinstance(v[key],list):
-                _val = ", ".join(map(str,v[key]))
+                _val = ", ".join(map(_str,v[key]))
+            elif isinstance(v[key], dict):
+                _val = "{ "
+                _val += ", ".join(map(lambda x:"%s:%s" % (x[0], _str(x[1]),), v[key].items()))
+                _val += " }"
             else:
                 _val = v[key]
             if not str(_val).strip():
