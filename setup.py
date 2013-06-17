@@ -44,7 +44,6 @@ setup(
     name = "mico",
     version = "0.1",
     description = "A monkey driven cloud management",
-    long_description=get_file_contents("README.rst"),
     author='Andres J. Diaz',
     author_email='ajdiaz@connectical.com',
     url='http://ajdiaz.github.com/mico',
