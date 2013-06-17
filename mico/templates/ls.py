@@ -87,7 +87,10 @@ def autoscale(*args):
 def main(*args):
     return autoscale(*args)
 
-def main(cmd, *args):
+def main(cmd=None, *args):
+    if cmd is None:
+        cmd = "instances"
+
     if cmd == "volumes" or cmd == "vols" or cmd == "vol" or cmd == "v":
         return volumes(*args)
     if cmd == "instances" or cmd == "inst" or cmd == "ins" or cmd == "i":
