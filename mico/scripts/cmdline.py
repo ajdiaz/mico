@@ -211,6 +211,7 @@ def main():
             env.loglevel.add("debug")
 
         env.ec2_region = args.region
+        env.args = args
 
         if len(args.template) == 0:
             cmdlne.cmdloop()

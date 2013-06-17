@@ -2,7 +2,8 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The cloudwatch module allows to access to AWS Cloud Watch API"""
+"""The cloudwatch module allows to access to AWS Cloud Watch API
+"""
 
 from os import environ as os_environ
 
@@ -42,13 +43,16 @@ def cw_connect(region=None, *args, **kwargs):
 def cw_exists(name):
     """Return the metric which match with specific name"""
     connection = cw_connect()
-    return connection.list_metrics(metric_name=name)
+    if isinstance(name, list):
+        return connection.describe_alarms(alarm_names=name)
+    else:
+        return connection.describe_alarms(alarm_names=[name])
 
 
 def _cw_define(name, alarm_actions=[], *args, **kwargs):
     _obj = cw_exists(name)
     if _obj:
-        mico.output.info("use existent cloudwatch metric: %s" % name)
+        mico.output.info("use existent cloudwatch alarm: %s" % name)
         return _obj
 
     if "namespace" not in kwargs:
@@ -119,4 +123,13 @@ def cw_ensure(name, alarm_actions=[], *args, **kwargs):
     cw_connection.create_alarm(alarm)
     mico.output.info("create alarm %s" % name)
     return alarm
+
+def cw_delete(*args):
+    """Delete alarms passed in arguments.
+    """
+
+    cw_connection = cw_connect()
+    for arg in args:
+        boto.ec2.cloudwatch.delete_alarms([arg])
+        mico.output.info("remove alarm %s" % arg)
 

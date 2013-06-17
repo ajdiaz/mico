@@ -46,6 +46,21 @@ monkey = """
                   '.,___.'
 """
 
+dump_keys = [
+        "created_time", "default_cooldown", "desired_capacity", "min_size",
+        "max_size", "health_check_period", "health_check_type",
+        "launch_config_name", 'reason', 'description','endElement', 'end_time',
+        'progress', 'startElement', 'start_time', 'status_code',
+        'adjustment_type', 'alarms', 'as_name', 'cooldown',
+        'min_adjustment_step','scaling_adjustment', "status",
+        'comparison', 'dimensions', 'disable_actions',
+        'enable_actions', 'evaluation_periods',
+        'last_updated','metric',
+        'period', 'set_state',
+        'state_reason', 'state_value', 'statistic',
+        'threshold', 'total_instances'
+]
+
 prompt_usr = os.environ.get("MICO_PS1", None) or "[0;1mmico[1;34m:[0;0m "
 prompt_err = os.environ.get("MICO_PS2", None) or "[31;1mmico[0;1m:[0;0m "
 prompt_inf = os.environ.get("MICO_PS3", None) or "[33;1mmico[0;1m:[0;0m "
@@ -92,6 +107,34 @@ def debug(message):
 
 def mute(*args, **kwargs):
     pass
+
+def dump(obj, layout="horizontal", color=True):
+    if color:
+        s = "[33;1m%s[0;0m:" % getattr(obj, "name","None")
+    else:
+        s = "%s:" % getattr(obj, "name","None")
+
+    v = vars(obj)
+    for key in v:
+        if key in dump_keys or "debug" in env.loglevel:
+            if isinstance(v[key],list):
+                _val = ", ".join(map(str,v[key]))
+            else:
+                _val = v[key]
+            if not str(_val).strip():
+                continue
+            if layout == "vertical":
+                s += "\n  "
+            if color:
+                s+=" %s = [0;1m%s[0;0m" % (key, _val)
+            else:
+                s+=" %s = %s" % (key, _val)
+
+    if layout == "vertical":
+        s+="\n"
+
+    print >> sys.stdout, s
+
 
 from fabric.state import output
 # XXX Supress some fabric messages, actually fabric message API is not very

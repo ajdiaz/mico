@@ -1,0 +1,31 @@
+#! /usr/bin/env python
+# -*- encoding: utf-8 -*-
+# vim:fenc=utf-8:
+
+import sys
+import fnmatch
+import mico.output
+from mico.lib.aws.ec2 import *
+
+def ls(*args):
+    """List alarms.
+    """
+    args = args or ('*',)
+
+    for alarm in as_list_alarms(*args):
+        mico.output.dump(alarm, layout=env.get("layout", "vertical"))
+
+def rm(*args):
+    """Remove alarms.
+    """
+
+    for arg in args:
+        as_delete_alarm(arg)
+
+def main(*args):
+    if len(args) > 0:
+        fn = getattr(sys.modules[__name__],args[0])
+        return fn(*args[1:])
+    else:
+        return ls()
+

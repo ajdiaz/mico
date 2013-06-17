@@ -22,7 +22,7 @@ import mico.output
 from mico.lib.aws.ec2 import EC2TemplateError
 from mico.lib.aws.ec2 import ec2_connect, get_region
 from mico.lib.aws.ec2 import ec2_tag_volumes
-from mico.lib.aws.ec2.cw import cw_connect, _cw_define
+from mico.lib.aws.ec2.cw import cw_connect, _cw_define, cw_exists
 from mico.lib.aws.ec2 import ec2_connect
 
 
@@ -332,7 +332,7 @@ def as_event(condition, action):
 
     return (condition, action)
 
-def as_delete(name, foce=False):
+def as_delete(name, force=False):
     """Remove a autoscale group.
 
     :type name: str
@@ -343,7 +343,9 @@ def as_delete(name, foce=False):
         even tough there will running instances.
     """
     conn = as_connect()
-    return conn.delete_auto_scaling_group(name, force)
+    _x = conn.delete_auto_scaling_group(name, force)
+    mico.output.info("Delete autoscaling group: %s" % name)
+    return _x
 
 
 def as_delete_policy(name, autoscale_group=None):
@@ -356,7 +358,9 @@ def as_delete_policy(name, autoscale_group=None):
     :param autoscale_group: the name of the autoscale group.
     """
     conn = as_connect()
-    return conn.delete_policy(name, autoscale)
+    _x = conn.delete_policy(name, autoscale)
+    mico.output.info("Delete autoscaling policy: %s" % name)
+    return _x
 
 def as_delete_config(name):
     """Remove a config template
@@ -365,7 +369,9 @@ def as_delete_config(name):
     :param name: the name of the config template
     """
     conn = as_connect()
-    return conn.delete_launch_configuration(name)
+    _x = conn.delete_launch_configuration(name)
+    mico.output.info("Delete autoscaling config: %s" % name)
+    return _x
 
 def as_activity(name, max_records=None):
     """Get the scaling activity for an autoscale group
@@ -387,25 +393,46 @@ def as_list(*args):
 
         as_list('apaches-*')
     """
-    conn = as_connect()
-    ec2  = ec2_connect()
     args = args or ('*',)
+    conn = as_connect()
 
-    for group in conn.get_all_groups():
-        for arg in args:
+    for arg in args:
+        for group in conn.get_all_groups():
             if fnmatch(group.name, arg):
-                _i = [i.instance_id for i in group.instances]
-                if len(_i) > 0:
-                    instances = [
-                            i for r in ec2.get_all_instances(_i)
-                            for i in r.instances
-                    ]
-                    for instance in instances:
-                        instance.name = instance.tags.get("Name", None)
-                        instance.secgroups = ",".join(map(
-                            lambda x:x.name,
-                            instance.groups
-                        ))
-                        instance.autoscaling_group = group.name
-                        yield instance.__dict__
+                group.total_instances = len(group.instances)
+                yield group
+
+def as_list_policies(*args):
+    """List autoscaling policies filtering by name providing as argument.
+    Glob expression are allowed in filters as multiple filters too, for
+    example::
+
+        as_list_policies('apaches-*')
+    """
+    args = args or ('*',)
+    conn = as_connect()
+
+    for arg in args:
+        for policy in conn.get_all_policies():
+            if fnmatch(policy.name, arg):
+                yield policy
+
+def as_list_alarms(*args):
+    """List autoscaling alarms filtering by name providing as argument.
+    Glob expression are allowed in filters as multiple filters too, for
+    example::
+
+        as_list_alarms('apaches-*')
+    """
+    args = args or ('*',)
+    conn = as_connect()
+
+    for arg in args:
+        for policy in as_list_policies('*'):
+            for alarm in policy.alarms:
+                if fnmatch(alarm.name, arg):
+                    cw_alarm = cw_exists(alarm.name)[0]
+                    cw_alarm.name = alarm.name
+                    yield cw_alarm
+
 
