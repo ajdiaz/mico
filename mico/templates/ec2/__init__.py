@@ -11,15 +11,20 @@ def ls(*args):
     expressions are allowed in filters as multiple filters too, for
     example::
 
-        instances('host-*', '*database*')
+        mico ec2 ls apaches-* test-*
     """
 
     for x in ec2_list(*args):
         mico.output.dump(x, layout=env.get("layout","vertical"))
 
-
 def reboot(*args):
-    """Reboot specified."""
+    """Reboot specified instances, for example::
+
+        mico ec2 reboot apaches-* test-*
+    """
+    for x in ec2_list(*args):
+        mico.output.info("Rebooting instance: %s (%s)" % (x.name, x.id,))
+        x.reboot()
 
 def main(*args):
     if len(args) > 0:
