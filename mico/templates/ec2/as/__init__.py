@@ -7,12 +7,14 @@ import fnmatch
 import mico.output
 from mico.lib.aws.ec2 import *
 
+__all__ = [ "alarms", "policies" ]
+
 def ls(*args):
     """List autoscaling groups with tag name, provided in arguments. Glob
     expressions are allowed in filters as multiple filters too, for
     example::
 
-        ls('host-*', '*database*')
+        mico ec2.as ls 'host-*' '*database*'
     """
 
     if args and not args[0]:
@@ -25,7 +27,7 @@ def rm(*args):
     """Remove a number of autoscaling groups which match with specfied glob
     passed as argument. A number of globs are allowed, for example::
 
-        rm('host-*', '*database*')
+        mico ec2.as rm 'host-*', '*database*'
     """
     args = args or ('*',)
 
@@ -34,6 +36,10 @@ def rm(*args):
 
 def log(*args):
     """Print autoscaling activities log.
+
+    Example::
+
+        mico ec2.as log
     """
     args = args or ('*',)
 
@@ -42,9 +48,14 @@ def log(*args):
             mico.output.dump(activity, layout=env.get("layout", "vertical"))
 
 
-from alarms import ls as alarms
-from alarms import rm as rm_alarms
-from policies import ls as policies
+def instances(*args):
+    """List instance which belongs on an specific autoscaling group.
+    For example::
+
+        mico ec2.as instances 'apache-*'
+    """
+    for instance in as_list_instances(*args):
+        mico.output.dump(instance, layout=env.get("layout", "vertical"))
 
 def main(*args):
     if len(args) > 0:

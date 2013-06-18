@@ -435,4 +435,19 @@ def as_list_alarms(*args):
                     cw_alarm.name = alarm.name
                     yield cw_alarm
 
+def as_list_instances(*args):
+    """List autoscaling instances which are vinculated with specified
+    autoscaling group passed as argument. For example::
+
+        as_list_instances('apaches-*')
+    """
+    for ag in as_list(*args):
+        for instance in ag.instances:
+            res = ec2_connect().get_all_instances([instance.instance_id])
+            for insobj in  [i for r in res for i in r.instances]:
+                insobj.autoscaling_group = ag.name
+                insobj.launch_config_name = instance.launch_config_name
+                if "Name" in insobj.tags:
+                    insobj.name = insobj.tags["Name"]
+                yield insobj
 

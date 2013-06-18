@@ -8,7 +8,10 @@ import mico.output
 from mico.lib.aws.ec2 import *
 
 def ls(*args):
-    """List policies.
+    """List scaling policies associated with autoscaling group. Searching
+    for policy name (not autoscaling group name). For example::
+
+        mico ec2.as.policies ls 'pol-*'
     """
     args = args or ('*',)
 

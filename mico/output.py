@@ -55,12 +55,12 @@ dump_keys = [
         'min_adjustment_step','scaling_adjustment', "status",
         'comparison', 'dimensions', 'disable_actions',
         'enable_actions', 'evaluation_periods',
-        'last_updated','metric',
-        'period', 'set_state',
+        'last_updated','metric', 'instance_id', 'id',
+        'period', 'set_state', 'autoscaling_group',
         'state_reason', 'state_value', 'statistic',
-        'threshold', 'total_instances',
-         '_state', 'root_device_type', 'instance_type',
-         'image_id', '_placement', 'secgroups', 'ip_address',
+        'threshold', 'total_instances', 
+        '_state', 'root_device_type', 'instance_type',
+        'image_id', '_placement', 'secgroups', 'ip_address',
 ]
 
 prompt_usr = os.environ.get("MICO_PS1", None) or "[0;1mmico[1;34m:[0;0m "
@@ -115,10 +115,10 @@ def _vars(obj):
     __dict__ function.
     """
 
-    if hasattr(obj, "__dict__"):
-        return vars(obj)
+    #if hasattr(obj, "__dict__"):
+    #    return vars(obj)
 
-    return { k: getattr(obj,k) for k in filter(callable, dir(obj)) }
+    return { k.strip("_"): getattr(obj,k) for k in filter(callable, dir(obj)) }
 
 def _str(obj):
     if hasattr(obj, "name"):

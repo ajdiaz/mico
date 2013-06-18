@@ -8,6 +8,7 @@ import cmd
 import shlex
 import random
 import pkgutil
+import inspect
 
 import mico
 import mico.fifo
@@ -49,8 +50,17 @@ class MicoCmdline(cmd.Cmd):
         "Set an environment variable, in teh form variable=value"
         if "=" in args:
             args = args.split("=")
+            val  = " ".join(args[1:])
+
+            if val == "True" or val == "true":
+                val = True
+            elif val == "False" or val == "false":
+                val = False
+            else:
+                val = "'%s'" % val
+
             try:
-                eval("env.__setitem__('%s','%s')" % ( args[0], " ".join(args[1:]) ))
+                eval("env.__setitem__('%s',%s)" % ( args[0], val ))
             except Exception, e:
                 mico.output.error("invalid evaluation: %s" % e)
         else:
@@ -91,6 +101,15 @@ class MicoCmdline(cmd.Cmd):
 
     def do_help(self, arg):
         'List available commands with "help" or detailed help with "help cmd"'
+        def _load_all_modules_from_dir(dirname):
+            for importer, package_name, _ in pkgutil.walk_packages([dirname]):
+                if package_name == "setup":
+                    continue
+                full_package_name = '%s.%s' % (dirname, package_name)
+                if full_package_name not in sys.modules:
+                    module = importer.find_module(package_name).load_module(full_package_name)
+                    yield package_name, module
+
         if arg:
             # XXX check arg syntax
             try:
@@ -131,8 +150,31 @@ class MicoCmdline(cmd.Cmd):
                     else:
                         cmds_undoc.append(cmd)
 
-            for cmd in cmds_doc:
-                print "%-15s%-s" % (cmd, getattr(self, "do_%s" % cmd).__doc__)
+
+            if len(cmds_doc):
+                print "Internal commands"
+                print "-----------------"
+                for cmd in cmds_doc:
+                    print "%-15s%-s" % (cmd, getattr(self, "do_%s" % cmd).__doc__)
+                print
+
+            if len(mico.config_path):
+                print "Template commands"
+                print "-----------------"
+                for path in mico.config_path:
+                    if path == ".":
+                        continue
+                    try:
+                        for pkgname, module in _load_all_modules_from_dir(path):
+                            for o in inspect.getmembers(module):
+                                if inspect.isfunction(o[1]):
+                                    if (module == inspect.getmodule(o[1])):
+                                        if getattr(o[1],"__doc__"):
+                                            print "%s.%s"% (pkgname, o[0],)
+                                            print "    %s" % (o[1].__doc__)
+                                            print
+                    except OSError:
+                        pass
 
 
 

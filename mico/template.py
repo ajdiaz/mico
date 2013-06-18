@@ -39,7 +39,7 @@ def import_code(code, name, add_to_sys_modules=0):
 
 class Template(type(__builtins__)):
     @classmethod
-    def load(cls, mod, fun=[]):
+    def load(cls, mod, fun=None):
         if mod.startswith("http://") or mod.startswith("https://"):
             try:
                 _mod = import_code(urllib2.urlopen(mod).read(),"_mico_dm_%s" % hashlib.sha1("mod").hexdigest(), True)
