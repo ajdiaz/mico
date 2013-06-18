@@ -37,6 +37,14 @@ def rm(*args):
             mico.output.error("Unable to remove volume %s: %s"
                     % (x, e.error_message,))
 
+def detach(*args):
+    """Detach a number of volumes if attached.
+    For example:
+
+        mico ec2.ebs detach vol-12345
+    """
+    for x in args:
+        ebs_detach(x, env.get("detach_force", None))
 
 def main(*args):
     if len(args) > 0:
