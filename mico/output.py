@@ -53,12 +53,12 @@ dump_keys = [
         'progress', 'startElement', 'start_time', 'status_code',
         'adjustment_type', 'alarms', 'as_name', 'cooldown',
         'min_adjustment_step','scaling_adjustment', "status",
-        'comparison', 'dimensions', 'disable_actions',
-        'enable_actions', 'evaluation_periods',
+        'comparison', 'dimensions', 'disable_actions', 'create_time',
+        'enable_actions', 'evaluation_periods', 'zone',
         'last_updated','metric', 'instance_id', 'id',
-        'period', 'set_state', 'autoscaling_group',
-        'state_reason', 'state_value', 'statistic',
-        'threshold', 'total_instances', 
+        'period', 'set_state', 'autoscaling_group', 'snapshot_id',
+        'state_reason', 'state_value', 'statistic', 'type',
+        'threshold', 'total_instances', 'device', 'size',
         '_state', 'root_device_type', 'instance_type',
         'image_id', '_placement', 'secgroups', 'ip_address',
 ]
@@ -118,7 +118,8 @@ def _vars(obj):
     #if hasattr(obj, "__dict__"):
     #    return vars(obj)
 
-    return { k.strip("_"): getattr(obj,k) for k in filter(callable, dir(obj)) }
+    return { k.strip("_"): getattr(obj,k) for k in filter(lambda
+        x:not hasattr(getattr(obj,x),"__call__") and not x.startswith("__"), dir(obj)) }
 
 def _str(obj):
     if hasattr(obj, "name"):

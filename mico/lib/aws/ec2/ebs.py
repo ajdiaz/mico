@@ -116,12 +116,12 @@ def ebs_list(*args):
     args = args or ('*',)
 
     for x in vol:
-        x.name = x.tags.get("Name", None)
+        x.name = x.id
         for arg in args:
-            if x.name and fnmatch(x.name, arg):
+            if x.tags.get("Name",False) and fnmatch(x.tags["Name"], arg):
                x.device = x.attach_data.device
                x.instance_id = ("%s (%s)" % (ins[x.attach_data.instance_id].tags.get("Name",None), x.attach_data.instance_id)) \
                                if x.attach_data.id is not None else None
-               yield x.__dict__
+               yield x
 
 

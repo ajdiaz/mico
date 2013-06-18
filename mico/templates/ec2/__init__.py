@@ -6,6 +6,8 @@ import sys
 import mico.output
 from mico.lib.aws.ec2 import *
 
+__all__ = [ "ebs" ]
+
 def ls(*args):
     """List instances filtering with tag name, provided in arguments. Glob
     expressions are allowed in filters as multiple filters too, for
@@ -13,7 +15,6 @@ def ls(*args):
 
         mico ec2 ls apaches-* test-*
     """
-
     for x in ec2_list(*args):
         mico.output.dump(x, layout=env.get("layout","vertical"))
 
