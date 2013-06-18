@@ -102,6 +102,45 @@ def ebs_exists(tags={}):
             dict(map(lambda (x,y):("tag:%s" % x, y), tags.items())))
     return filter(lambda x:x.status == 'in-use', _x)
 
+def ebs_delete(volumes):
+    """Delete volumes passed as argument.
+
+    :param volumes: a list of strings including volumes id, a list of
+        Volumes object, or a string or a single Volume object for a unique
+        volume to be deleted.
+    """
+    connection = ec2_connect()
+
+    if not isinstance(volumes, list):
+        volumes = [ volumes ]
+
+    for x in volumes:
+        if isinstance(x, str):
+            connection.delete_volume(x)
+            mico.output.info("Remove volume: %s" % x)
+        else:
+            connection.delete_volume(x.id)
+            mico.output.info("Remove volume: %s" % x.id)
+
+def ebs_detach(volumes, force=False):
+    """Detach a number of volumes passed as arguments.
+
+    :param volumes: a list of volumes ids or Volumes objects to be removed,
+        or single string or object for detach unique volume.
+    """
+    connection = ec2_connect()
+
+    if not isinstance(volumes, list):
+        volumes = [ volumes ]
+
+    for x in volumes:
+        if isinstance(x, str):
+            connection.detach_volume(x, force)
+            mico.output.info("Detached volume: %s" % x)
+        else:
+            connection.detach_volume(x.id, force)
+            mico.output.info("Detached volume: %s" % x.id)
+
 
 def ebs_list(*args):
     """List volumes filtering with tag name, provided in arguments. Glob
@@ -123,5 +162,4 @@ def ebs_list(*args):
                x.instance_id = ("%s (%s)" % (ins[x.attach_data.instance_id].tags.get("Name",None), x.attach_data.instance_id)) \
                                if x.attach_data.id is not None else None
                yield x
-
 
