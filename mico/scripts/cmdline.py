@@ -231,6 +231,12 @@ def main():
                                       help="be verbose",
                                       default=False)
 
+    cmdopt.add_argument("-f", "--force", action="store_true",
+                                      dest="force",
+                                      help="force changes",
+                                      default=False)
+
+
 
     cmdopt.add_argument("template",
                         nargs='*',
@@ -252,6 +258,7 @@ def main():
         if args.verbose:
             env.loglevel.add("debug")
 
+        env.force = args.force
         env.ec2_region = args.region
         env.args = args
 
