@@ -6,8 +6,10 @@ from threading import Thread
 from functools import wraps
 
 from fabric.api import parallel as fabric_parallel
+from fabric.api import roles as fabric_roles
 from mico.util.mutex import Mutex
 
+roles = fabric_roles
 parallel = fabric_parallel
 
 

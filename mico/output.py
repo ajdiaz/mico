@@ -77,36 +77,42 @@ def abort(message):
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
                 _h, inspect.stack()[1][3], message)
+    return message
 
 def error(message,func=None,exception=None,stdout=None,stderr=None):
     if "error" in env.loglevel:
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
                 _h, inspect.stack()[1][3], exception or message)
+    return message
 
 def warn(message):
     if "warn" in env.loglevel:
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
                 _h, inspect.stack()[1][3], message)
+    return message
 
 def puts(text, show_prefix=None, end='\n', flush=False):
     if "info" in env.loglevel:
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
                 _h, inspect.stack()[1][3], text)
+    return message
 
 def info(message):
     if "info" in env.loglevel:
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg,
                 _h, inspect.stack()[1][3], message)
+    return message
 
 def debug(message):
     if "debug" in env.loglevel:
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg,
                 _h, inspect.stack()[1][3], message)
+    return message
 
 def mute(*args, **kwargs):
     pass

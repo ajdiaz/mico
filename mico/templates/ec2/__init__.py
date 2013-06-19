@@ -3,6 +3,7 @@
 # vim:fenc=utf-8:
 
 import sys
+import mico
 import mico.output
 from mico.lib.aws.ec2 import *
 
@@ -64,6 +65,33 @@ def terminate(*args):
         except boto.exception.EC2ResponseError as e:
             mico.output.error("Unable to terminate instance %s (%s): %s"
                     % (x.name, x.id, e.error_message,))
+
+def run(*args):
+    """Execute command over a number of hosts which match with specified Tag
+    name provided as argument. Example::
+
+        mico ec2 run 'apaches-*' service apache reload
+    """
+    env.roledefs['mico'] = [ x.ip_address for x in ec2_list(args[0]) ]
+    env.roles.append('mico')
+
+    mico.run(" ".join(args[1:]))
+
+#    from fabric.api import env as _env, run as _run, roles as _roles
+#    from fabric.tasks import execute as _exe
+#    _env.roledefs['mico'] = [ x.ip_address for x in ec2_list(args[0]) ]
+#    _env.roles.append('mico')
+#    print _env
+#
+
+    # XXX meter en un wrapper
+#    def _action(*a,**kw):
+#        _action.__name__ = "run"
+#        mico.output.info(_run(" ".join(args[1:])))
+#
+#    _exe(_action, [], {}, [], [])
+
+
 
 def main(*args):
     if len(args) > 0:

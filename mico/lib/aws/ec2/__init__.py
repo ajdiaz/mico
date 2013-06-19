@@ -292,8 +292,6 @@ from mico.lib.aws.ec2.ebs import *
 from mico.lib.aws.ec2.elb import *
 from mico.lib.aws.ec2.autoscale  import *
 
-
-from mico import run
 from mico.environ import environ
 
 @environ('ec2_ami')

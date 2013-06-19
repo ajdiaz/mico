@@ -192,15 +192,13 @@ class MicoCmdline(cmd.Cmd):
                 for path in self.template_path:
                     mico.config_path.append(os.path.join(os.path.dirname(mod.__file__), path))
         except ImportError, e:
+            raise
             mico.output.error("template '%s' not found: %s." % (mod,e,))
         except AttributeError, e:
+            raise
             mico.output.error("function '%s' not found in template '%s': %s" % ( fun[0], mod, e, ))
         else:
-            mico.execute(fun, *tuple(lexer[1:]))
-
-
-
-
+            mico.execute(fun, False, *tuple(lexer[1:]))
 
 def main():
     """Entrypoint for mico cmdline client."""
@@ -267,6 +265,7 @@ def main():
         else:
             cmdlne.onecmd(" ".join(args.template))
     except Exception, e:
+        raise
         if "debug" in env.loglevel:
             raise e
         mico.output.error("unexpected error: %s: %s" % (e.__class__.__name__ ,e))
