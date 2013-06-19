@@ -72,46 +72,51 @@ prompt_dbg = os.environ.get("MICO_PS4", None) or "[30;1mmico[0;1m:[0;0m "
 
 env.loglevel = set([ "abort", "error", "warn", "info" ])
 
+def label():
+    if env.get("host_label", False) and \
+       env.get("host_string",False) and \
+       env["host_label"][env["host_string"]]:
+        return env["host_label"][env["host_string"]]
+
+    if env.get("host_string", False):
+        return env["host_string"]
+
+    if is_local():
+        return "local"
+
+    return "cloud"
+
+def stack():
+    return inspect.stack()[2][3]
+
 def abort(message):
     if "abort" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
-                _h, inspect.stack()[1][3], message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
     return message
 
-def error(message,func=None,exception=None,stdout=None,stderr=None):
+def error(message, *args, **kwargs):
     if "error" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
-                _h, inspect.stack()[1][3], exception or message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
     return message
 
 def warn(message):
     if "warn" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
-                _h, inspect.stack()[1][3], message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
     return message
 
-def puts(text, show_prefix=None, end='\n', flush=False):
+def puts(message, *args, **kwargs):
     if "info" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
-                _h, inspect.stack()[1][3], text)
-    return text
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
+    return message
 
-def info(message):
+def info(message, *args, **kwargs):
     if "info" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg,
-                _h, inspect.stack()[1][3], message)
+        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg, label(), stack(), message)
     return message
 
 def debug(message):
     if "debug" in env.loglevel:
-        _h = env["host_string"] or ("local" if is_local() else "cloud")
-        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg,
-                _h, inspect.stack()[1][3], message)
+        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg, label(), stack(), message)
     return message
 
 def mute(*args, **kwargs):
