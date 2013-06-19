@@ -107,7 +107,7 @@ class MicoCmdline(cmd.Cmd):
                     continue
                 full_package_name = '%s.%s' % (dirname, package_name)
                 if full_package_name not in sys.modules:
-                    module = importer.find_module(package_name).load_module(full_package_name)
+                    module = importer.find_module(package_name).load_module(dirname)
                     yield package_name, module
 
         if arg:
@@ -152,25 +152,29 @@ class MicoCmdline(cmd.Cmd):
 
 
             if len(cmds_doc):
-                print "Internal commands"
-                print "-----------------"
+                print "[33;1minternals[0;0m"
+                print "Internal commands for mico which are implemented in mico itself."
+                print
                 for cmd in cmds_doc:
                     print "%-15s%-s" % (cmd, getattr(self, "do_%s" % cmd).__doc__)
                 print
 
             if len(mico.config_path):
-                print "Template commands"
-                print "-----------------"
                 for path in mico.config_path:
                     if path == ".":
                         continue
                     try:
                         for pkgname, module in _load_all_modules_from_dir(path):
+                            print "[33;1m%s[0;0m" % pkgname
+                            if hasattr(module,"__doc__") and module.__doc__:
+                                print "%s" % module.__doc__
+                            print
+
                             for o in inspect.getmembers(module):
                                 if inspect.isfunction(o[1]):
                                     if (module == inspect.getmodule(o[1])):
                                         if getattr(o[1],"__doc__"):
-                                            print "%s.%s"% (pkgname, o[0],)
+                                            print "[0;1m%s.%s[0;0m"% (pkgname, o[0],)
                                             print "    %s" % (o[1].__doc__)
                                             print
                     except OSError:

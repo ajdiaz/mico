@@ -2,12 +2,15 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+"""EC2 template to handle actions over EC2 infrastructure.
+"""
 import sys
 import mico
 import mico.output
 from mico.lib.aws.ec2 import *
 
-__all__ = [ "ebs" ]
+__all__ = [ "ebs" "as" ]
+
 
 def ls(*args):
     """List instances filtering with tag name, provided in arguments. Glob

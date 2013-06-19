@@ -2,12 +2,16 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+"""The as template provides function to handle EC2 autoscaling groups.
+"""
+
 import sys
 import fnmatch
 import mico.output
 from mico.lib.aws.ec2 import *
 
 __all__ = [ "alarms", "policies" ]
+
 
 def ls(*args):
     """List autoscaling groups with tag name, provided in arguments. Glob
