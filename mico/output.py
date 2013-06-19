@@ -61,7 +61,7 @@ dump_keys = [
         'threshold', 'total_instances', 'device', 'size',
         '_state', 'root_device_type', 'instance_type',
         'image_id', '_placement', 'secgroups', 'ip_address',
-        'ttl', 'resource_records',
+        'ttl', 'resource_records', 'launch_time'
 ]
 
 prompt_usr = os.environ.get("MICO_PS1", None) or "[0;1mmico[1;34m:[0;0m "
@@ -98,7 +98,7 @@ def puts(text, show_prefix=None, end='\n', flush=False):
         _h = env["host_string"] or ("local" if is_local() else "cloud")
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
                 _h, inspect.stack()[1][3], text)
-    return message
+    return text
 
 def info(message):
     if "info" in env.loglevel:

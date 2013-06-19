@@ -6,12 +6,11 @@ from threading import Thread
 from functools import wraps
 
 from fabric.api import parallel as fabric_parallel
-from fabric.api import roles as fabric_roles
 from mico.util.mutex import Mutex
 
-roles = fabric_roles
-parallel = fabric_parallel
+import mico.output
 
+parallel = fabric_parallel
 
 def async(func):
     """Function decorator, intended to make "func" run in a separate
@@ -38,9 +37,13 @@ def async(func):
 
     @wraps(func)
     def _inner(*args, **kwargs):
-        func_th = Thread(target = func, args = args, kwargs = kwargs)
-        func_th.start()
-        return func_th
+        if env.parallel:
+            func_th = Thread(target = func, args = args, kwargs = kwargs)
+            func_th.start()
+            return func_th
+        else:
+            mico.output.debug("Avoid async action for %s due to env.parallel = False" % func.__name__)
+            return func(*args, **kwargs)
 
     return _inner
 

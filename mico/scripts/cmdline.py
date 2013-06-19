@@ -234,7 +234,10 @@ def main():
                                       help="force changes",
                                       default=False)
 
-
+    cmdopt.add_argument("-np", "--no-parallel", action="store_false",
+                                      dest="parallel",
+                                      help="don't execute actions in parallel",
+                                      default=True)
 
     cmdopt.add_argument("template",
                         nargs='*',
@@ -257,6 +260,7 @@ def main():
             env.loglevel.add("debug")
 
         env.force = args.force
+        env.parallel = args.parallel
         env.ec2_region = args.region
         env.args = args
 
