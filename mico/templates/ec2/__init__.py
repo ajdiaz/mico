@@ -75,7 +75,8 @@ def run(*args):
 
         mico ec2 run 'apaches-*' service apache reload
     """
-    env.roledefs['mico'] = [ x.ip_address for x in ec2_list(args[0]) ]
+    env.host_label = { x.ip_address:x.name for x in ec2_list(args[0]) }
+    env.roledefs['mico'] = [ x for x in env.host_label ]
     env.roles.append('mico')
 
     mico.run(" ".join(args[1:]))
