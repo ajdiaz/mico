@@ -277,8 +277,19 @@ def ec2_list(*args):
 
     for reservation in conn.get_all_instances():
         for instance in reservation.instances:
-            if "Name" in instance.tags:
-                for arg in args:
+            instance.name = instance.ip_address or "pending"
+            for arg in args:
+                if arg.startswith("sec:"):
+                    arg = arg[4:]
+                    for group in map(lambda x:x.name, instance.groups):
+                        if fnmatch(group, arg):
+                            if "Name" in instance.tags:
+                                instance.name = instance.tags["Name"]
+                            yield instance
+                elif "Name" in instance.tags:
+                    if arg.startswith("tag:"):
+                        arg = arg[4:]
+
                     if fnmatch(instance.tags["Name"], arg):
                         instance.name = instance.tags["Name"]
                         yield instance

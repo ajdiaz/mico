@@ -75,11 +75,13 @@ def run(*args):
 
         mico ec2 run 'apaches-*' service apache reload
     """
-    env.host_label = { x.ip_address:x.name for x in ec2_list(args[0]) }
+    env.host_label = { x.ip_address:x.name for x in ec2_list(args[0]) if x.ip_address is not None }
     env.roledefs['mico'] = [ x for x in env.host_label ]
+
     env.roles.append('mico')
 
-    mico.run(" ".join(args[1:]))
+    if len(env.roledefs['mico']) > 0:
+        mico.run(" ".join(args[1:]))
 
 #    from fabric.api import env as _env, run as _run, roles as _roles
 #    from fabric.tasks import execute as _exe

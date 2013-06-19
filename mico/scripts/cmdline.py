@@ -226,6 +226,18 @@ def main():
                                       type=str,
                                       default="us-east-1")
 
+    cmdopt.add_argument("-u", "--user", action="store",
+                                      dest="user",
+                                      help="set the user to use to connect to host",
+                                      type=str,
+                                      default=None)
+
+    cmdopt.add_argument("-i", "--identity-file", action="store",
+                                      dest="identity_file",
+                                      help="set the key to use to connect to host",
+                                      type=str,
+                                      default=None)
+
     cmdopt.add_argument("-v", "--verbose", action="store_true",
                                       dest="verbose",
                                       help="be verbose",
@@ -260,6 +272,12 @@ def main():
 
         if args.verbose:
             env.loglevel.add("debug")
+
+        if args.user:
+            env.user = args.user
+
+        if args.identity_file:
+            env.key_filename = args.identity_file
 
         env.force = args.force
         env.parallel = args.parallel
