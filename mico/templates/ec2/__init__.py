@@ -83,22 +83,6 @@ def run(*args):
     if len(env.roledefs['mico']) > 0:
         mico.run(" ".join(args[1:]))
 
-#    from fabric.api import env as _env, run as _run, roles as _roles
-#    from fabric.tasks import execute as _exe
-#    _env.roledefs['mico'] = [ x.ip_address for x in ec2_list(args[0]) ]
-#    _env.roles.append('mico')
-#    print _env
-#
-
-    # XXX meter en un wrapper
-#    def _action(*a,**kw):
-#        _action.__name__ = "run"
-#        mico.output.info(_run(" ".join(args[1:])))
-#
-#    _exe(_action, [], {}, [], [])
-
-
-
 def main(*args):
     if len(args) > 0:
         fn = getattr(sys.modules[__name__],args[0])
