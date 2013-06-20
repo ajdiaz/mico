@@ -107,7 +107,7 @@ class MicoCmdline(cmd.Cmd):
                     continue
                 full_package_name = '%s.%s' % (dirname, package_name)
                 if full_package_name not in sys.modules:
-                    module = importer.find_module(package_name).load_module(dirname)
+                    module = importer.find_module(package_name).load_module(full_package_name)
                     yield package_name, module
 
         if arg:
