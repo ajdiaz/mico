@@ -277,6 +277,8 @@ def ec2_list(*args):
 
     for reservation in conn.get_all_instances():
         for instance in reservation.instances:
+            if instance.state == "terminated":
+                continue
             instance.name = instance.ip_address or "pending"
             for arg in args:
                 if arg.startswith("sec:"):

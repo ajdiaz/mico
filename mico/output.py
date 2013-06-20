@@ -55,7 +55,7 @@ dump_keys = [
         'min_adjustment_step','scaling_adjustment', "status",
         'comparison', 'dimensions', 'disable_actions', 'create_time',
         'enable_actions', 'evaluation_periods', 'zone',
-        'last_updated','metric', 'instance_id', 'id',
+        'last_updated','metric', 'instance_id', 'id', 'state',
         'period', 'set_state', 'autoscaling_group', 'snapshot_id',
         'state_reason', 'state_value', 'statistic', 'type',
         'threshold', 'total_instances', 'device', 'size',

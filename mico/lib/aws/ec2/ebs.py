@@ -5,6 +5,7 @@
 """The EC2 volume template provides methods to work with AWS EC2 EBS volumes.
 """
 
+import time
 from fnmatch import fnmatch
 
 import mico.output
@@ -78,6 +79,10 @@ def ebs_ensure(size, zone=None, instance=None, device=None, tags={},
         size,
         zone
     ))
+
+    while _obj.status != "available":
+        time.sleep(1)
+        _obj.update()
 
     if tags:
         connection.create_tags([_obj.id],tags)
