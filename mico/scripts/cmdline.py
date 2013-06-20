@@ -110,48 +110,48 @@ class MicoCmdline(cmd.Cmd):
                     module = importer.find_module(package_name).load_module(full_package_name)
                     yield package_name, module
 
-        if arg:
-            # XXX check arg syntax
-            try:
-                func = getattr(self, 'help_' + arg)
-            except AttributeError:
+        names = self.get_names()
+        cmds_doc = []
+        cmds_undoc = []
+        help = {}
+        for name in names:
+            if name[:5] == 'help_':
+                help[name[5:]]=1
+        names.sort()
+        # There can be duplicates if routines overridden
+        prevname = ''
+        for name in names:
+            if name[:3] == 'do_':
+                if name == prevname:
+                    continue
+                prevname = name
+                cmd=name[3:]
+                if cmd in help:
+                    cmds_doc.append(cmd)
+                    del help[cmd]
+                elif getattr(self, name).__doc__:
+                    cmds_doc.append(cmd)
+                else:
+                    cmds_undoc.append(cmd)
+
+
+        if len(cmds_doc):
+            if arg and arg in cmds_doc:
+                # Show help for internal command
                 try:
-                    doc=getattr(self, 'do_' + arg).__doc__
-                    if doc:
-                        self.stdout.write("%s\n"%str(doc))
-                        return
+                    func = getattr(self, 'help_' + arg)
                 except AttributeError:
-                    pass
-                self.stdout.write("%s\n"%str(self.nohelp % (arg,)))
-                return
-            func()
-        else:
-            names = self.get_names()
-            cmds_doc = []
-            cmds_undoc = []
-            help = {}
-            for name in names:
-                if name[:5] == 'help_':
-                    help[name[5:]]=1
-            names.sort()
-            # There can be duplicates if routines overridden
-            prevname = ''
-            for name in names:
-                if name[:3] == 'do_':
-                    if name == prevname:
-                        continue
-                    prevname = name
-                    cmd=name[3:]
-                    if cmd in help:
-                        cmds_doc.append(cmd)
-                        del help[cmd]
-                    elif getattr(self, name).__doc__:
-                        cmds_doc.append(cmd)
-                    else:
-                        cmds_undoc.append(cmd)
-
-
-            if len(cmds_doc):
+                    try:
+                        doc=getattr(self, 'do_' + arg).__doc__
+                        if doc:
+                            self.stdout.write("%s\n"%str(doc))
+                            return
+                    except AttributeError:
+                        pass
+                    self.stdout.write("%s\n"%str(self.nohelp % (arg,)))
+                    return
+                return func()
+            else:
                 print "[33;1minternals[0;0m"
                 print "Internal commands for mico which are implemented in mico itself."
                 print
@@ -159,12 +159,13 @@ class MicoCmdline(cmd.Cmd):
                     print "%-15s%-s" % (cmd, getattr(self, "do_%s" % cmd).__doc__)
                 print
 
-            if len(mico.config_path):
-                for path in mico.config_path:
-                    if path == ".":
-                        continue
-                    try:
-                        for pkgname, module in _load_all_modules_from_dir(path):
+        if len(mico.config_path):
+            for path in mico.config_path:
+                if path == ".":
+                    continue
+                try:
+                    for pkgname, module in _load_all_modules_from_dir(path):
+                        if not arg or arg == pkgname:
                             print "[33;1m%s[0;0m" % pkgname
                             if hasattr(module,"__doc__") and module.__doc__:
                                 print "%s" % module.__doc__
@@ -177,8 +178,8 @@ class MicoCmdline(cmd.Cmd):
                                             print "[0;1m%s.%s[0;0m"% (pkgname, o[0],)
                                             print "    %s" % (o[1].__doc__)
                                             print
-                    except OSError:
-                        pass
+                except OSError:
+                    pass
 
 
 
