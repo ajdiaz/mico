@@ -42,25 +42,27 @@ def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_p
             ret["to_port"]   = to_port or 65535
 
     def _add_source(src, d):
+        r = {}
+        r.update(d)
         if isinstance(src, SecurityGroup) or \
            isinstance(src, SG_Instance):
 
             if getattr(src, "owner_alias", None):
                 # XXX: Monkey Patch!!
                 src.owner_id = src.owner_alias
-            d["src_group"] = src
+            r["src_group"] = src
 
         elif isinstance(src, str) or isinstance(src, unicode):
             if "/" in src and "." in src:
                 # TODO: better ip check is desired here.
-                d["cidr_ip"] = src
+                r["cidr_ip"] = src
             else:
-                d["src_group"] = sg_exists(src)
-                if d["src_group"] is None:
+                r["src_group"] = sg_exists(src)
+                if r["src_group"] is None:
                     raise KeyError("security group %s does not exists" % src)
         else:
             raise ValueError("Unknow type for sg source")
-        return d
+        return r
 
 
     if isinstance(source, list):
