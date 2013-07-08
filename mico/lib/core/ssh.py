@@ -30,7 +30,7 @@ def ssh_keygen(user, key_type="rsa"):
                 key_type,
                 d["home"],
                 key_type
-            ))
+            ))[0]
             mico.output.info("created ssh-key for user %s" % user)
             if _x.return_code == 0:
                 _x = file_attribs(os.path.join(d["home"],".ssh/id_%s" % key_type), owner=user)

@@ -16,9 +16,9 @@ def user_password(name, password, encrypted_password=False):
     """
     encoded_password = base64.b64encode("%s:%s" % (name, password))
     if encrypted_password:
-        _x = run("usermod -p '%s' '%s'" % (password,name))
+        _x = run("usermod -p '%s' '%s'" % (password,name))[0]
     else:
-        _x = run("echo '%s' | openssl base64 -A -d | chpasswd" % (encoded_password))
+        _x = run("echo '%s' | openssl base64 -A -d | chpasswd" % (encoded_password))[0]
 
     mico.output.info("set password for user %s" % name)
     return _x
@@ -47,7 +47,7 @@ def user_create(name, password=None, home=None, uid=None, gid=None, shell=None,
         options.append("-K UID_MAX='%s'" % (uid_max))
     if fullname:
         options.append("--gecos='%s'" % (fullname))
-    _x = run("useradd %s '%s'" % (" ".join(options), name))
+    _x = run("useradd %s '%s'" % (" ".join(options), name))[0]
     if password:
         return user_password(name=name,password=password,encrypted_password=encrypted_password)
     else:
@@ -69,9 +69,9 @@ def user_exists(name=None, uid=None):
         raise ExecutionError("user_exists require name or uid, but not both")
 
     if name != None:
-        d = run("cat /etc/passwd | egrep '^%s:'" % (name), force=True)
+        d = run("cat /etc/passwd | egrep '^%s:'" % (name), force=True)[0]
     else:
-        d = run("cat /etc/passwd | egrep '^.*:.*:%s:'" % (uid), force=True)
+        d = run("cat /etc/passwd | egrep '^.*:.*:%s:'" % (uid), force=True)[0]
 
     if not d:
         return False
@@ -97,6 +97,6 @@ def user_remove(name, rm_home=False):
     """Removes the user with the given name, optionally
     removing the home directory and mail spool.
     """
-    return run("userdel -f %s '%s'" % (rm_home and "-r" or "", name))
+    return run("userdel -f %s '%s'" % (rm_home and "-r" or "", name))[0]
 
 

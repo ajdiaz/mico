@@ -24,5 +24,5 @@ def ulimit_ensure(limits):
 
     for limit in limits:
         _x = run("sed 's:[ \\t][ \\t]*: :g' /etc/security/limits.conf " + \
-                 "| grep '%s' || ( echo '%s' >> /etc/security/limits.conf; )" % (limit,limit,))
+                 "| grep '%s' || ( echo '%s' >> /etc/security/limits.conf; )" % (limit,limit,))[0]
 
