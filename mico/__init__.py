@@ -109,6 +109,7 @@ class ExecutionError(Exception):
 
 __builtin__.run_local = run_local
 __builtin__.run = run
+__builtin__.execute = execute
 
 
 from mico.decorators import async, serial, parallel, sync
