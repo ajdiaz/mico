@@ -49,7 +49,7 @@ from fabric import operations
 from StringIO import StringIO
 
 def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
-    """Local implementation of fabric.api.run() using subprocess.
+    """Local implementation of fabric.api.execute() using subprocess.
 
     .. note:: pty option exists for function signature compatibility and is
         ignored.

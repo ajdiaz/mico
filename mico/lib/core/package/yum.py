@@ -14,7 +14,7 @@ def repository_ensure(repository):
 def package_upgrade():
     """Upgrade (update) yum cache.
     """
-    return run("yum -y update")
+    return execute("yum -y update")
 
 def package_update(package=None):
     """Upgrade a package.
@@ -23,11 +23,11 @@ def package_update(package=None):
     :param pagage: the package(s) name to be updated or None for all.
     """
     if package == None:
-        return run("yum -y update")
+        return execute("yum -y update")
     else:
         if type(package) in (list, tuple):
             package = " ".join(package)
-        return run("yum -y upgrade " + package)
+        return execute("yum -y upgrade " + package)
 
 def package_install(package, update=False):
     """Install a package
@@ -40,13 +40,13 @@ def package_install(package, update=False):
     :param update: if set to True (by default False), update cache first.
     """
     if update:
-        _x = run("yum -y update")
+        _x = execute("yum -y update")
         if _x.return_code != 0:
             raise ExecutionError("Unable to update")
 
     if type(package) in (list, tuple):
         package = " ".join(package)
-    return run("yum -y install %s" % (package))
+    return execute("yum -y install %s" % (package))
 
 def package_remove(package, autoclean=False):
     """Remove YUM package.
@@ -58,7 +58,7 @@ def package_remove(package, autoclean=False):
     :param autoclean: If set (False by default) execute autoclean after
         remove (not work with yum).
     """
-    _x = run("yum remove '%s'" % package)
+    _x = execute("yum remove '%s'" % package)
     if _x.return_code == 0:
         if autoclean:
             raise NotImplementedError("autoclean is not implemented in yum")

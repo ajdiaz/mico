@@ -26,7 +26,7 @@ def ssh_keygen(user, key_type="rsa"):
         key_file = os.path.join(d["home"], ".ssh/id_%s.pub" % key_type)
         if not file_exists(key_file):
             dir_ensure(os.path.join(d["home"], ".ssh/"), mode="0700", owner=user)
-            _x = run("ssh-keygen -q -t %s -f '%s/.ssh/id_%s' -N ''" % (
+            _x = execute("ssh-keygen -q -t %s -f '%s/.ssh/id_%s' -N ''" % (
                 key_type,
                 d["home"],
                 key_type

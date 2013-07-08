@@ -16,13 +16,13 @@ def dir_attribs(location, mode=None, owner=None, group=None, recursive=False):
 def dir_exists(location):
     """Tells if there is a remote directory at the given location.
     """
-    return (run("test -d '%s'" % location, force=True).return_code == 0)
+    return (execute("test -d '%s'" % location, force=True).return_code == 0)
 
 def dir_remove(location, recursive=True):
     """Removes a directory
     """
     if dir_exists(location):
-        _x = run("rm -%sf '%s'" % (recursive and "-r" or "", location))
+        _x = execute("rm -%sf '%s'" % (recursive and "-r" or "", location))
         mico.output.info("removed directory %s" % location)
         return _x
 
@@ -35,7 +35,7 @@ def dir_ensure(location, recursive=True, mode=None, owner=None, group=None):
     """
     _x = None
     if not dir_exists(location):
-        _x = run("mkdir %s '%s'" % (recursive and "-p" or "", location))
+        _x = execute("mkdir %s '%s'" % (recursive and "-p" or "", location))
         if _x.return_code != 0:
             mico.output.error("unable to create directory %s" % location)
             return
