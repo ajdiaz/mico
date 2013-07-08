@@ -45,7 +45,7 @@ def environ(name):
 def _env_kernel():
     """Get the kernel version running in the remote host.
     """
-    return mico.run("uname -s").lower()
+    return mico.run("uname -s")[0].lower()
 
 from mico.lib.core import file_exists
 from mico.lib.core import file_read
