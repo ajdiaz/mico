@@ -61,6 +61,25 @@ def instances(*args):
     for instance in as_list_instances(*args):
         mico.output.dump(instance, layout=env.get("layout", "vertical"))
 
+def pause(*args):
+    """Pause autoscaling group activity. When paused an autoscaling
+    group does not grow nor srink
+    For example::
+        mico ec2.as pause 'apache-*'
+    """
+
+    for group in as_list(*args):
+        as_pause(group)
+
+def resume(*args):
+    """Resume autoscaling group activity.
+    For example::
+        mico ec2.as resume 'apache-*'
+    """
+
+    for group in as_list(*args):
+        as_resume(group)
+
 def main(*args):
     if len(args) > 0:
         fn = getattr(sys.modules[__name__],args[0])

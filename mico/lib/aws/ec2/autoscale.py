@@ -143,6 +143,35 @@ def as_config(name, ami, force=False, *args, **kwargs):
     mico.output.info("create new config %s" % name)
     return config
 
+def as_pause(group):
+    """Pause autoscaling group activity. When paused an autoscaling
+    group does not grow nor srink.
+
+    :type group: AutoScalingGroup
+    :param group: Auto Scaling Group object.
+    """
+
+    as_con = as_connect()
+    _x = as_con.suspend_processes(group.name)
+
+    mico.output.info("paused autoscaling group %s" % group.name)
+
+    return _x
+
+def as_resume(group):
+    """Resume autoscaling group activity.
+
+    :type group: AutoScalingGroup
+    :param group: AutoScalingGroup object.
+    """
+
+    as_con = as_connect()
+    _x = as_con.resume_processes(group.name)
+
+    mico.output.info("resume autoscaling group %s" % group.name)
+
+    return _x
+
 def as_policy(name, adjustment_type='ChangeInCapacity',
         scaling_adjustment=2, cooldown=60, *args, **kwargs):
     """
@@ -398,6 +427,8 @@ def as_list(*args):
 
     for arg in args:
         for group in conn.get_all_groups():
+            if group.suspended_processes:
+                group.paused = True
             if fnmatch(group.name, arg):
                 group.total_instances = len(group.instances)
                 yield group
