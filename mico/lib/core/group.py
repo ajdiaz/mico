@@ -21,7 +21,7 @@ def group_exists(name):
         group), members (a list with members of the group) or None if the
         group does not exists.
     """
-    group_data = run("cat /etc/group | egrep '^%s:'" % (name), force=True)
+    group_data = run("cat /etc/group | egrep '^%s:'" % (name), force=True)[0]
     if group_data:
         name, _, gid, members = group_data.split(":", 4)
         return dict(name=name, gid=gid,
