@@ -28,13 +28,13 @@ def file_attribs(location, mode=None, owner=None, group=None, recursive=False):
     recursive = recursive and "-R " or ""
     _x = None
     if mode:
-        _x = execute('chmod %s %s "%s"' % (recursive, mode,  location))
+        _x = run('chmod %s %s "%s"' % (recursive, mode,  location))
         mico.output.info("set attributes for %s to %s" % (location, mode))
     if owner:
-        _x = execute('chown %s %s "%s"' % (recursive, owner, location))
+        _x = run('chown %s %s "%s"' % (recursive, owner, location))
         mico.output.info("set owner for %s to %s" % (location, owner))
     if group:
-        _x = execute('chgrp %s %s "%s"' % (recursive, group, location))
+        _x = run('chgrp %s %s "%s"' % (recursive, group, location))
         mico.output.info("set group for %s to %s" % (location, group))
 
     return _x
@@ -57,25 +57,25 @@ def file_read(location):
         (UNIX/DOC/MAC) of EOLs
     """
     with fabric.context_managers.settings(fabric.api.hide('stdout')):
-        _exe = execute('openssl base64 -in "%s"' % (location))
+        _exe = run('openssl base64 -in "%s"' % (location))
         if _exe.return_code == 0:
             return base64.b64decode(_exe)
 
 def file_exists(location):
     """Tests if there is a *remote* file at the given location."""
-    _exe = execute("test -e '%s'" % (location), force=True)
+    _exe = run("test -e '%s'" % (location), force=True)
     return _exe.return_code == 0
 
 def file_is_file(location):
-    _exe = execute("test -f '%s'" % (location))
+    _exe = run("test -f '%s'" % (location))
     return _exe.return_code == 0
 
 def file_is_dir(location):
-    _exe = execute("test -d '%s'" % (location))
+    _exe = run("test -d '%s'" % (location))
     return _exe.return_code == 0
 
 def file_is_link(location):
-    _exe = execute("test -L '%s'" % (location))
+    _exe = run("test -L '%s'" % (location))
     return _exe.return_code == 0
 
 def file_attribs_get(location):
@@ -84,7 +84,7 @@ def file_attribs_get(location):
     otherwise.
     """
     if file_exists(location):
-        fs_check = execute('stat %s %s' % (location, '--format="%a %U %G"'))
+        fs_check = run('stat %s %s' % (location, '--format="%a %U %G"'))
         if fs_check.return_code == 0:
             (mode, owner, group) = fs_check.split(' ')
             return {'mode': mode, 'owner': owner, 'group': group}
@@ -101,7 +101,7 @@ def file_md5(location):
         appear before the result, so we simply split and get the last line to
         be on the safe side.
     """
-    sig = execute('md5sum "%s" | cut -d" " -f1' % (location))
+    sig = run('md5sum "%s" | cut -d" " -f1' % (location))
     if sig.return_code == 0:
         return sig.split(os.linesep)[-1].strip()
 
@@ -113,7 +113,7 @@ def file_sha256(location):
         appear before the result, so we simply split and get the last line to
         be on the safe side.
     """
-    sig = execute('shasum -a 256 "%s" | cut -d" " -f1' % (location))
+    sig = run('shasum -a 256 "%s" | cut -d" " -f1' % (location))
     if sig.return_code == 0:
         return sig.split(os.linesep)[-1].strip()
 
@@ -131,14 +131,14 @@ def file_write(location, content, mode=None, owner=None, group=None, check=True)
     # Upload the content if necessary
     if sig != file_md5(location):
         if is_local():
-            execute("cp '%s' '%s'"%(lpath,location))
+            run("cp '%s' '%s'"%(lpath,location))
         else:
             # FIXME: Put is not working properly, I often get stuff like:
             # Fatal error: sudo() encountered an error (return code 1) while executing 'mv "3dcf7213c3032c812769e7f355e657b2df06b687" "/etc/authbind/byport/80"'
             #fabric.operations.put(local_path, location, use_sudo=use_sudo)
             # Hides the output, which is especially important
             # See: http://unix.stackexchange.com/questions/22834/how-to-uncompress-zlib-data-in-unix
-            result = execute("echo '%s' | openssl base64 -A -d -out '%s'" % (base64.b64encode(content), location))
+            result = run("echo '%s' | openssl base64 -A -d -out '%s'" % (base64.b64encode(content), location))
     # Remove the local temp file
     os.fsync(fd)
     os.close(fd)
@@ -176,7 +176,7 @@ def file_update(location, updater=lambda x:x):
         raise ExecutionError("file does not exists")
 
     new_content = updater(file_read(location))
-    _x = execute("echo '%s' | openssl base64 -A -d -out '%s'" % (base64.b64encode(new_content), location))
+    _x = run("echo '%s' | openssl base64 -A -d -out '%s'" % (base64.b64encode(new_content), location))
     mico.output.info("updated %d bytes into file %s" % (len(new_content), location, ))
     return _x
 
@@ -184,7 +184,7 @@ def file_append(location, content, mode=None, owner=None, group=None):
     """Appends the given content to the remote file at the given
     location, optionally updating its mode/owner/group.
     """
-    execute('echo "%s" | openssl base64 -A -d >> "%s"' % (base64.b64encode(content), location))
+    run('echo "%s" | openssl base64 -A -d >> "%s"' % (base64.b64encode(content), location))
     _x = file_attribs(location, mode, owner, group)
     mico.output.info("appended %d bytes into file %s" % (len(content), location, ))
     return _x
@@ -192,7 +192,7 @@ def file_append(location, content, mode=None, owner=None, group=None):
 def file_unlink(path):
     """Unlink or remove a file"""
     if file_exists(path):
-        _x = execute("unlink '%s'" % (path))
+        _x = run("unlink '%s'" % (path))
         mico.output.info("removed file %s" % (location, ))
         return _x
 
@@ -207,9 +207,9 @@ def file_link(source, destination, symbolic=True, mode=None, owner=None, group=N
     if file_is_link(destination):
         file_unlink(destination)
     if symbolic:
-        execute("ln -sf '%s' '%s'" % (source, destination))
+        run("ln -sf '%s' '%s'" % (source, destination))
     else:
-        execute("ln -f '%s' '%s'" % (source, destination))
+        run("ln -f '%s' '%s'" % (source, destination))
     return file_attribs(destination, mode, owner, group)
 
 

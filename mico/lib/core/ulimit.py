@@ -23,6 +23,6 @@ def ulimit_ensure(limits):
     limits = map(lambda x:' '.join(x.split()), limits)
 
     for limit in limits:
-        _x = execute("sed 's:[ \\t][ \\t]*: :g' /etc/security/limits.conf " + \
+        _x = run("sed 's:[ \\t][ \\t]*: :g' /etc/security/limits.conf " + \
                  "| grep '%s' || ( echo '%s' >> /etc/security/limits.conf; )" % (limit,limit,))
 

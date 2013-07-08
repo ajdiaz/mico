@@ -10,7 +10,7 @@ import mico.output
 def group_create(name, gid=None):
     """Creates a group with the given name, and optionally given gid.
     """
-    _x = execute("groupadd %s '%s'" % ( ("-g '%s'" % gid) if gid else "", name ))
+    _x = run("groupadd %s '%s'" % ( ("-g '%s'" % gid) if gid else "", name ))
     mico.output.info("created group %s" % name)
     return _x
 
@@ -21,7 +21,7 @@ def group_exists(name):
         group), members (a list with members of the group) or None if the
         group does not exists.
     """
-    group_data = execute("cat /etc/group | egrep '^%s:'" % (name), force=True)
+    group_data = run("cat /etc/group | egrep '^%s:'" % (name), force=True)
     if group_data:
         name, _, gid, members = group_data.split(":", 4)
         return dict(name=name, gid=gid,
@@ -33,7 +33,7 @@ def group_remove(name):
     """Remove a group which match with specified name.
     """
     if group_exists(name):
-        _x = execute("groupdel '%s'" % name)
+        _x = run("groupdel '%s'" % name)
         mico.output.info("removed group %s" % name)
         return _x
     else:
@@ -49,7 +49,7 @@ def group_ensure(name, gid=None):
         return group_create(name, gid)
     else:
         if gid != None and d.get("gid") != gid:
-            _x = execute("groupmod -g %s '%s'" % (gid, name))
+            _x = run("groupmod -g %s '%s'" % (gid, name))
             mico.output.info("changed GID for group %s to %d" % (name, gid,))
             return _x
 
@@ -70,7 +70,7 @@ def group_user_add(group, user):
         raise ExecutionError("group %s does not exists" % group)
 
     if not group_user_exists(group, user):
-        _x = execute("usermod -a -G '%s' '%s'" % (group, user))
+        _x = run("usermod -a -G '%s' '%s'" % (group, user))
         mico.output.info("added user %s into group %s" % (user, group,))
         return _x
 
@@ -88,11 +88,11 @@ def group_user_del(group, user):
             raise ExecutionError("group %s does not exists" % group)
 
         if group_user_exists(group, user):
-            group_for_user = execute("cat /etc/group | egrep -v '^%s:' | grep '%s' | awk -F':' '{print $1}' | grep -v %s" % (group, user, user), force=True)
+            group_for_user = run("cat /etc/group | egrep -v '^%s:' | grep '%s' | awk -F':' '{print $1}' | grep -v %s" % (group, user, user), force=True)
             if group_for_user.return_code == 0:
                 group_for_user = group_for_user.splitlines()
                 if group_for_user:
-                    _x = execute("usermod -G '%s' '%s'" % (",".join(group_for_user), user))
+                    _x = run("usermod -G '%s' '%s'" % (",".join(group_for_user), user))
                     mico.output.info("removed user %s from group %s" % (user,group,))
                     return _x
 

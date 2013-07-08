@@ -38,5 +38,5 @@ def sudo(*args, **kwargs):
     regular user or sudo.
     """
     with mode_sudo():
-        return execute(*args, **kwargs)
+        return run(*args, **kwargs)
 
