@@ -182,7 +182,6 @@ class MicoCmdline(cmd.Cmd):
                     pass
 
 
-
     def default(self, args):
         lexer = shlex.shlex(args)
         lexer.wordchars += "?*:/%&.-="
