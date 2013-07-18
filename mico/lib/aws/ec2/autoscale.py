@@ -172,6 +172,24 @@ def as_resume(group):
 
     return _x
 
+def as_resize(group, size):
+    """Change autoscaling group desired capacity to size.
+
+    :type group: AutoscalingGroup
+    :param group: AutoscalingGroup object.
+
+    :type size: int
+    :param size: Desired size to set
+    """
+
+    as_con = as_connect()
+    old_capacity = group.desired_capacity
+    _x = as_con.set_desired_capacity(group.name, size)
+
+    mico.output.info("changing autoscaling group %s desired capacity from %d to %d" % (group.name, old_capacity, size))
+
+    return _x
+
 def as_policy(name, adjustment_type='ChangeInCapacity',
         scaling_adjustment=2, cooldown=60, *args, **kwargs):
     """
@@ -412,8 +430,14 @@ def as_activity(name, max_records=None):
     :param max_records: the maximum number of record to get, or None (by
         default) to get all of them.
     """
+
+    def _set_activity_name(activity):
+        activity.name = activity.group_name
+
+        return activity
+
     conn = as_connect()
-    return conn.get_all_activities(name, max_records)
+    return map(_set_activity_name, conn.get_all_activities(name, max_records))
 
 def as_list(*args):
     """List autoscaling groups filtering by autoscale name, provided as
