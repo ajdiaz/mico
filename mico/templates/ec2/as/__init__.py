@@ -80,6 +80,24 @@ def resume(*args):
     for group in as_list(*args):
         as_resume(group)
 
+def resize(size, *args):
+   """Resize autoscaling group to a specified size.
+   When issuing rezie you change AutoScaling Group desired capacity.
+   It ignores cooldown time.
+
+   :param size: Desired capacity
+
+   For example::
+        mico ec2.as resize 10 'apache-*'
+   """
+   size = int(size)
+
+   for group in as_list(*args):
+        if group.min_size <= size:
+            as_resize(group, size)
+        else:
+            mico.output.error("(%s) desired size %d must be higher than min size %d" %(group.name, size, group.min_size))
+
 def main(*args):
     if len(args) > 0:
         fn = getattr(sys.modules[__name__],args[0])
