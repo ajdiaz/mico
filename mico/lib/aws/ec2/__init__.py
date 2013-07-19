@@ -183,7 +183,7 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
         if _obj:
             status = _obj.update()
             if status != "terminated":
-                mico.output.info("use existent instance: %s" % _obj.id)
+                mico.output.info("use existent instance: %s [%s]" % (_obj.id, _obj.ip_address or 'no ip found') )
                 if getattr(_obj,"ip_address", None) and _obj.ip_address:
                     env.hosts.append(_obj.ip_address)
                     env.host_string = _obj.ip_address
@@ -234,7 +234,7 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
         time.sleep(2) # amazon needs time to think about how to associate an address.
 
     if getattr(instance,"ip_address", None) and instance.ip_address:
-        mico.output.info("created instance: %s [%s]" % (instance.id, instance.ip_address))
+        mico.output.info("created instance: %s as %s [%s]" % (instance.id, instance.instance_type, instance.ip_address))
         if 'mico' in env.roledefs:
             env.roledefs['mico'].append(instance.ip_address)
         else:
