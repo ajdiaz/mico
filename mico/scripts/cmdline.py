@@ -187,10 +187,14 @@ class MicoCmdline(cmd.Cmd):
         lexer.wordchars += "?*:/%&.-="
         lexer = tuple([ x for x in lexer ])
 
-        mod, fun = lexer[0], ["main"]
+        if ":" in lexer[0]:
+            mod, fun = lexer[0].split(":", 2)
+        else:
+            mod = lexer[0]
+            fun = "main"
 
         try:
-            mod, fun = Template.load(mod, fun)
+            mod, fun = Template.load(mod, [fun])
             if not mod.__name__.startswith("_mico_dm_"):
                 mico.config_path.append(os.path.dirname(mod.__file__))
                 for path in self.template_path:
