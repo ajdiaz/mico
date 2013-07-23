@@ -281,7 +281,11 @@ def ec2_list(*args):
                 continue
             instance.name = instance.ip_address or "pending"
             for arg in args:
-                if arg.startswith("sec:"):
+                if arg.startswith("ip:"):
+                    arg = arg[3:]
+                    if instance.ip_address and fnmatch(instance.ip_address, arg):
+                        yield instance
+                elif arg.startswith("sec:"):
                     arg = arg[4:]
                     for group in map(lambda x:x.name, instance.groups):
                         if fnmatch(group, arg):
