@@ -185,8 +185,10 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
             if status != "terminated":
                 mico.output.info("use existent instance: %s [%s]" % (_obj.id, _obj.ip_address or 'no ip found') )
                 if getattr(_obj,"ip_address", None) and _obj.ip_address:
-                    env.hosts.append(_obj.ip_address)
-                    env.host_string = _obj.ip_address
+                    if 'mico' in env.roledefs:
+                        env.roledefs['mico'].append(instance.ip_address)
+                    else:
+                        env.roledefs['mico'] = [ instance.ip_address ]
                 return _obj
 
     kwargs["disable_api_termination"] = termination_protection
