@@ -186,9 +186,13 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
                 mico.output.info("use existent instance: %s [%s]" % (_obj.id, _obj.ip_address or 'no ip found') )
                 if getattr(_obj,"ip_address", None) and _obj.ip_address:
                     if 'mico' in env.roledefs:
-                        env.roledefs['mico'].append(instance.ip_address)
+                        env.roledefs['mico'].append(_obj.ip_address)
                     else:
-                        env.roledefs['mico'] = [ instance.ip_address ]
+                        env.roledefs['mico'] = [ _obj.ip_address ]
+
+                    if 'mico' not in env.roles:
+                        env.roles.append('mico')
+
                 return _obj
 
     kwargs["disable_api_termination"] = termination_protection
@@ -241,6 +245,10 @@ def ec2_ensure(ami, name=None, address=None, wait_until_running=True,
             env.roledefs['mico'].append(instance.ip_address)
         else:
             env.roledefs['mico'] = [ instance.ip_address ]
+
+        if 'mico' not in env.roles:
+            env.roles.append('mico')
+
     else:
         mico.output.info("created instance: %s [<unassigned address>]" % (instance.id,))
 

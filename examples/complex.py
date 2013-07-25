@@ -58,12 +58,21 @@ def create_instance(arg):
     "Create EBS instance for nosy."
 
     instance = ec2_ensure(
-            ami = "ami-d0f89fb9",
+            ami = "ami-10314d79",
             name = arg,
             instance_type = "t1.micro",
             user_data = USERDATA % ( arg, "%s.example.com" % arg,) ,
-            key_name = "example",
-            security_groups = [ "frontend" ]
+            key_name = "root-us-east-virginia",
+            security_groups = [ "frontend" ],
+            placement = "us-east-1a"
+    )
+
+    xvdf = ebs_ensure(
+        size        = 8,
+        zone        = "us-east-1a",
+        volume_type = "standard",
+        instance    = instance,
+        device      = "/dev/sdf",
     )
 
 

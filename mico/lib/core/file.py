@@ -284,7 +284,8 @@ def file_content(src, dst, env={}, mode=None, owner=None, group=None,
         orig_attr = { "mode":mode, "group":group, "owner":owner }
 
     hash_original = hashlib.sha1(original).hexdigest()
-    _path = os.path.join(local_env["host_string"], dst.strip("/"))
+    print local_env
+    _path = os.path.join("test", dst.strip("/"))
     if hash_original != hash_content or _path not in revision_repo:
         revision_repo[_path] = original
         file_write(dst, content)
