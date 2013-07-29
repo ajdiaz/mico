@@ -8,8 +8,10 @@ autoscaling groups.
 
 import sys
 import fnmatch
+
 import mico.output
 from mico.lib.aws.ec2 import *
+
 
 def ls(*args):
     """List alarms defined for autoscaling groups, searching for alarm name
@@ -22,6 +24,7 @@ def ls(*args):
     for alarm in as_list_alarms(*args):
         mico.output.dump(alarm, layout=env.get("layout", "vertical"))
 
+
 def rm(*args):
     """Remove alarms created with an autoscaling group, searching for alarm
     name (not autoscaling group name). For example::
@@ -30,6 +33,7 @@ def rm(*args):
     """
     for arg in args:
         as_delete_alarm(arg)
+
 
 def main(*args):
     if len(args) > 0:
