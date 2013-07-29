@@ -2,6 +2,10 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+"""The path module contains functions to build the different paths to be
+used in mico, reading environment variables when needed.
+"""
+
 import os
 import sys
 
