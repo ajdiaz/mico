@@ -3,8 +3,8 @@
 # vim:fenc=utf-8:
 
 """This module provides different ways to store metadata on persistent and
-volalile storage."""
-
+volalile storage.
+"""
 
 import os
 import git
@@ -14,11 +14,13 @@ import hashlib
 
 class Storage(dict):
     """Models a basic storage. Just an abstraction, see other implementations
-    for real use."""
+    for real use.
+    """
+
 
 class FileStorage(Storage):
-    """Wrapper to storage in plain JSON files."""
-
+    """Wrapper to storage in plain JSON files.
+    """
     def __init__(self, path):
         super(FileStorage, self).__init__()
         self.path = path
@@ -44,9 +46,10 @@ class FileStorage(Storage):
                  self[key] = _x
                  return _x
 
-class RevisionStorage(Storage):
-    """Wrapper to storage which use revision system."""
 
+class RevisionStorage(Storage):
+    """Wrapper to storage which use revision system.
+    """
     REVISION_MESSAGE = "Automatic update: %(filename)s"
 
     def __init__(self, path):
