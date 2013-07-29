@@ -9,6 +9,7 @@ import sys
 import mico.output
 from mico.lib.aws.ec2 import *
 
+
 def ls(*args):
     """List volumes filtering with tag name, provided in arguments. Glob
     expressions are allowed in filters as multiple filters too, for
@@ -18,6 +19,7 @@ def ls(*args):
     """
     for x in ebs_list(*args):
         mico.output.dump(x, layout=env.get("layout","vertical"))
+
 
 def rm(*args):
     """Remove volumes which match with the volume id passed as argument.
@@ -40,6 +42,7 @@ def rm(*args):
             mico.output.error("Unable to remove volume %s: %s"
                     % (x, e.error_message,))
 
+
 def detach(*args):
     """Detach a number of volumes if attached.
     For example:
@@ -48,6 +51,7 @@ def detach(*args):
     """
     for x in args:
         ebs_detach(x, env.get("detach_force", None))
+
 
 def main(*args):
     if len(args) > 0:
