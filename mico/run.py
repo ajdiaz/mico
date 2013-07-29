@@ -2,6 +2,11 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+"""The run module contains the execution module, which includes the way to
+execute mico actions (including post and pre hooks) and the main run action
+over remote host or cloud.
+"""
+
 import fabric.api
 from fabric.tasks import execute as fabric_execute
 
