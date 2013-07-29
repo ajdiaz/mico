@@ -2,9 +2,14 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-class AttrDict(dict):
-    """Wrapper dictionary which allows to access items using getattr."""
+"""The dicts module contains a number of wrappers over dictionaries which
+are easy to use and provide some good functionalities.
+"""
 
+
+class AttrDict(dict):
+    """Wrapper dictionary which allows to access items using getattr.
+    """
     def __getattr__(self, item):
         if item[0] == "_":
             return getattr(super(AttrDict, self), item)
@@ -20,8 +25,8 @@ class AttrDict(dict):
 
 class AttrLazyDict(AttrDict):
     """Wrapper dictionary which allows to access items using getattr and
-    return None if value do not exists yet."""
-
+    return None if value do not exists yet.
+    """
     def __getattr__(self, item):
         try:
             return getattr(super(AttrDict, self), item)
@@ -55,8 +60,10 @@ class AutoCreatedDict(dict):
             else:
                 return fn()
 
+
 class AutoCreatedLazyDict(object):
-    """Mixin to merge AttrLazyDict and LazyDict."""
+    """Mixin to merge AttrLazyDict and LazyDict.
+    """
     def __init__(self, data):
         self.d = AutoCreatedDict(data)
 
@@ -74,7 +81,5 @@ class AutoCreatedLazyDict(object):
 
     def __repr__(self):
         return repr(self.d)
-
-
 
 
