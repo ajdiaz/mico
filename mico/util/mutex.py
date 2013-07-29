@@ -4,6 +4,7 @@
 
 from threading import Lock
 
+
 class Mutex(object):
     """Models a mutex object which provides a lock over an object,
     identified by name.
