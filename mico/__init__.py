@@ -5,36 +5,13 @@
 import os
 import sys
 
-# Set the configuration PATH
-config_path = [
-        os.curdir,
-        os.path.join(os.environ.get("HOME","/"), ".config/mico"),
-        "/etc/mico",
-        os.path.join(os.path.dirname(__file__), "stack"),
-        os.path.join(os.curdir, "files")
-]
-
-if os.environ.get("MICO_CONFIG_PATH", None):
-    config_path.insert(0, os.environ.get("MICO_CONFIG_PATH"))
+import mico.path
 
 # Set the cache PATH
 cache_path = os.environ.get("MICO_CACHE_PATH", None) or \
              os.path.join(os.environ.get("HOME","/"), ".cache/mico")
 
-# Set the lib PATH
-lib_path = [
-        os.path.join(os.environ.get("HOME","/"), ".local/share/mico"),
-        "/usr/lib/mico",
-        "/usr/local/lib/mico",
-        "/usr/share/mico"
-        "/usr/local/share/mico"
-]
-
-if os.environ.get("MICO_LIBRARY_PATH", None):
-    lib_path.insert(0, os.environ.get("MICO_LIBRARY_PATH"))
-
-sys.path.extend(lib_path)
-sys.path.extend(config_path)
+sys.path.extend(mico.path.get_library_path())
 
 import __builtin__
 from mico.util.dicts import AutoCreatedLazyDict

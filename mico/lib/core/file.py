@@ -257,8 +257,8 @@ def file_content(src, dst, env={}, mode=None, owner=None, group=None,
         argument even if file is already created in remote with another
         group.
     """
-    jinja_env = Environment(loader=FileSystemLoader(mico.config_path))
-    jinja_tpl = jinja_env.get_template(src)
+    jinja_env = Environment(loader=FileSystemLoader([os.path.dirname(src)]))
+    jinja_tpl = jinja_env.get_template(os.path.basename(src))
 
     local_env = dict([ (k,v) for (k,v) in __builtin__.env.items() ])
     local_env.update(env)

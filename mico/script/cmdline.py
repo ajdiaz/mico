@@ -11,6 +11,7 @@ import pkgutil
 import inspect
 
 import mico
+import mico.path
 import mico.util
 import mico.hook
 import mico.output
@@ -28,8 +29,10 @@ class MicoCmdline(cmd.Cmd):
     def complete(self, text, state):
         "Return a list of completion options for console."
 
+        _stack_path = mico.path.get_stack_path()
+
         options =  [i for i in map(lambda x:x[3:], filter(lambda x:x.startswith("do_"), dir(self) )) if i.startswith(text) if i != "EOF" ]
-        options += [i for j in map(pkgutil.iter_modules, mico.config_path) for _,i,_ in j]
+        options += [i for j in map(pkgutil.iter_modules, _stack_path) for _,i,_ in j]
 
         if state < len(options):
             return options[state]
@@ -94,6 +97,9 @@ class MicoCmdline(cmd.Cmd):
 
     def do_help(self, arg):
         'List available commands with "help" or detailed help with "help cmd"'
+
+        _stack_path = mico.path.get_stack_path()
+
         def _load_all_modules_from_dir(dirname):
             for importer, package_name, _ in pkgutil.walk_packages([dirname]):
                 if package_name == "setup":
@@ -152,8 +158,8 @@ class MicoCmdline(cmd.Cmd):
                     print "%-15s%-s" % (cmd, getattr(self, "do_%s" % cmd).__doc__)
                 print
 
-        if len(mico.config_path):
-            for path in mico.config_path:
+        if len(_stack_path):
+            for path in _stack_path:
                 if path == ".":
                     continue
                 try:
@@ -188,12 +194,10 @@ class MicoCmdline(cmd.Cmd):
 
         try:
             mod, fun = Stack.load(mod, [fun])
-            if not mod.__name__.startswith("_mico_dm_"):
-                mico.config_path.append(os.path.dirname(mod.__file__))
         except ImportError, e:
             mico.output.error("stack '%s' not found: %s." % (mod,e,))
         except AttributeError, e:
-            mico.output.error("entry point '%s' not found in stack '%s': %s" % ( fun[0], mod, e, ))
+            mico.output.error("entry point '%s' not found in stack '%s': %s" % ( fun, mod, e, ))
         else:
             mico.execute(fun, False, *tuple(lexer[1:]))
 

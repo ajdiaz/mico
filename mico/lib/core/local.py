@@ -24,8 +24,8 @@ def local_content(src, var={}):
     :param var: a dictionary to use as environment for template
     """
 
-    jinja_env = Environment(loader=FileSystemLoader(mico.config_path))
-    jinja_tpl = jinja_env.get_template(src)
+    jinja_env = Environment(loader=FileSystemLoader([os.path.dirname(src)]))
+    jinja_tpl = jinja_env.get_template(os.path.basename(src))
 
     local_env = dict([ (k,v) for (k,v) in __builtin__.env.items() ])
     local_env.update(var)
@@ -33,20 +33,25 @@ def local_content(src, var={}):
     content = jinja_tpl.render(**local_env)
     return content
 
+
 from mico.util.switch import Switcher
 mode_local = Switcher.from_key("mode_local", True)
+
 
 def is_local():
     """Return True if the execution is running in local host."""
     return mode_local.getValue("mode_local")
 
+
 def is_remote():
     """Return True if the execution is running in remote host."""
     return not is_local()
 
+
 import subprocess
 from fabric import operations
 from StringIO import StringIO
+
 
 def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
     """Local implementation of fabric.api.run() using subprocess.
@@ -76,4 +81,5 @@ def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
     result.failed      = not result.succeeded
     result.stderr      = StringIO(err)
     return result
+
 
