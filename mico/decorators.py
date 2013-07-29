@@ -11,6 +11,7 @@ from mico.util.mutex import Mutex
 import mico.output
 
 parallel = fabric_parallel
+serial = fabric_serial
 
 def async(func):
     """Function decorator, intended to make "func" run in a separate
@@ -47,7 +48,7 @@ def async(func):
 
     return _inner
 
-def serial(func):
+def sync(func):
     """Function decorator, intended to make "func" wait for threading async
     finished.
 
@@ -63,7 +64,7 @@ def serial(func):
         def task2():
             do_something_too
 
-        @serial
+        @sync
         def task3():
             do_something_when_task1_and_task2_finished()
 
@@ -81,15 +82,21 @@ def serial(func):
     return _inner
 
 
-def sync(f):
+def lock(f):
     """Decorator to synchronize a function while running in asynchronous
     mode. Let's suppose that you have a number of tasks decorated by
     ``@async``, but you need to ensure that one common action is
-    synchronized over all of them, then ``@sync`` is for you.
+    synchronized over all of them, then ``@lock`` is for you.
 
-    .. note:: The ``@sync`` decorator is radically different of ``@serial``.
-        While ``@serial`` waits for every thread to be done, ``@sync`` just only
+    .. note:: The ``@lock`` decorator is radically different of ``@sync``.
+        While ``@sync`` waits for every thread to be done, ``@lock`` just only
         ensure that the decorated function is calling once a time.
+
+    Example::
+
+        @lock
+        def task():
+            # access to critical region
     """
     def _f(*args, **kw):
         with Mutex.get_mutex(f.__name__):

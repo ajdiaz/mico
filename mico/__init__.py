@@ -112,11 +112,12 @@ __builtin__.run = run
 __builtin__.execute = execute
 
 
-from mico.decorators import async, serial, parallel, sync
+from mico.decorators import async, serial, parallel, sync, lock
 __builtin__.async = async
 __builtin__.serial = serial
 __builtin__.parallel = parallel
 __builtin__.sync = sync
+__builtin__.lock = lock
 
 from mico.util.storage import FileStorage
 __builtin__.env.storage = FileStorage(cache_path)

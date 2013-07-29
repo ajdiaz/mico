@@ -26,7 +26,7 @@ from mico.lib.aws.ec2.cw import cw_connect, _cw_define, cw_exists
 from mico.lib.aws.ec2 import ec2_connect
 
 
-@sync
+@lock
 def _as_get_timestamp():
     # TODO: In the future this function will be in utils package.
     if not getattr(_as_get_timestamp, "_timestamp", None):
