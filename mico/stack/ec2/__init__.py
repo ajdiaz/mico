@@ -4,10 +4,12 @@
 
 """EC2 stack to handle actions over EC2 infrastructure.
 """
+
 import sys
 import mico
 import mico.output
 from mico.lib.aws.ec2 import *
+
 
 __all__ = [ "ebs" "as" ]
 
@@ -22,6 +24,7 @@ def ls(*args):
     for x in ec2_list(*args):
         mico.output.dump(x, layout=env.get("layout","vertical"))
 
+
 def reboot(*args):
     """Reboot specified instances, for example::
 
@@ -30,6 +33,7 @@ def reboot(*args):
     for x in ec2_list(*args):
         x.reboot()
         mico.output.info("Reboot instance: %s (%s)" % (x.name, x.id,))
+
 
 def stop(*args):
     """Stop specified instances, for example::
@@ -50,6 +54,7 @@ def start(*args):
         x.start()
         mico.output.info("Start instance: %s (%s)" % (x.name, x.id,))
 
+
 def terminate(*args):
     """Terminate specified instances, for example::
 
@@ -69,6 +74,7 @@ def terminate(*args):
             mico.output.error("Unable to terminate instance %s (%s): %s"
                     % (x.name, x.id, e.error_message,))
 
+
 def run(*args):
     """Execute command over a number of hosts which match with specified Tag
     name provided as argument. Example::
@@ -83,6 +89,7 @@ def run(*args):
     if len(env.roledefs['mico']) > 0:
         mico.run(" ".join(args[1:]))
 
+
 def main(*args):
     if len(args) > 0:
         fn = getattr(sys.modules[__name__],args[0])
@@ -95,3 +102,4 @@ rm = terminate
 halt = stop
 shutdown = stop
 restart = reboot
+
