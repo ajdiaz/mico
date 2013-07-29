@@ -10,6 +10,7 @@ import fnmatch
 import mico.output
 from mico.lib.aws.ec2 import *
 
+
 __all__ = [ "alarms", "policies" ]
 
 
@@ -27,6 +28,7 @@ def ls(*args):
     for x in as_list(*args):
         mico.output.dump(x, layout=env.get("layout", "vertical"))
 
+
 def rm(*args):
     """Remove a number of autoscaling groups which match with specfied glob
     passed as argument. A number of globs are allowed, for example::
@@ -37,6 +39,7 @@ def rm(*args):
 
     for x in as_list(*args):
         as_delete(x.name, force=True)
+
 
 def log(*args):
     """Print autoscaling activities log.
@@ -61,6 +64,7 @@ def instances(*args):
     for instance in as_list_instances(*args):
         mico.output.dump(instance, layout=env.get("layout", "vertical"))
 
+
 def pause(*args):
     """Pause autoscaling group activity. When paused an autoscaling
     group does not grow nor srink
@@ -71,6 +75,7 @@ def pause(*args):
     for group in as_list(*args):
         as_pause(group)
 
+
 def resume(*args):
     """Resume autoscaling group activity.
     For example::
@@ -79,6 +84,7 @@ def resume(*args):
 
     for group in as_list(*args):
         as_resume(group)
+
 
 def resize(size, *args):
    """Resize autoscaling group to a specified size.
@@ -97,6 +103,7 @@ def resize(size, *args):
             as_resize(group, size)
         else:
             mico.output.error("(%s) desired size %d must be higher than min size %d" %(group.name, size, group.min_size))
+
 
 def main(*args):
     if len(args) > 0:
