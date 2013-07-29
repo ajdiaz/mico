@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+import sys
+
 from threading import Thread
 from functools import wraps
 

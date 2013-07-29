@@ -10,7 +10,7 @@ import random
 import pkgutil
 import inspect
 
-import mico
+#import mico
 import mico.path
 import mico.util
 import mico.hook
@@ -199,7 +199,7 @@ class MicoCmdline(cmd.Cmd):
         except AttributeError, e:
             mico.output.error("entry point '%s' not found in stack '%s': %s" % ( fun, mod, e, ))
         else:
-            mico.execute(fun, False, *tuple(lexer[1:]))
+            execute(fun, False, *tuple(lexer[1:]))
 
 def main():
     """Entrypoint for mico cmdline client."""

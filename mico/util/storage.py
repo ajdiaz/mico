@@ -11,8 +11,6 @@ import git
 import json
 import hashlib
 
-from __builtin__ import env
-
 
 class Storage(dict):
     """Models a basic storage. Just an abstraction, see other implementations
