@@ -8,8 +8,10 @@ policies.
 
 import sys
 import fnmatch
+
 import mico.output
 from mico.lib.aws.ec2 import *
+
 
 def ls(*args):
     """List scaling policies associated with autoscaling group. Searching
