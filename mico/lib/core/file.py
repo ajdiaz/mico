@@ -15,11 +15,15 @@ from jinja2 import Environment, FileSystemLoader
 
 import fabric
 
+import mico.path
 import mico.output
 import mico.util.storage
+
+
 revision_repo = mico.util.storage.RevisionStorage(
-        os.path.join(mico.cache_path, __name__)
+        os.path.join(mico.path.get_cache_path(), __name__)
 )
+
 
 def file_attribs(location, mode=None, owner=None, group=None, recursive=False):
     """Updates the mode/owner/group for the remote file at the given

@@ -7,10 +7,6 @@ import sys
 
 import mico.path
 
-# Set the cache PATH
-cache_path = os.environ.get("MICO_CACHE_PATH", None) or \
-             os.path.join(os.environ.get("HOME","/"), ".cache/mico")
-
 sys.path.extend(mico.path.get_library_path())
 
 import __builtin__
@@ -97,7 +93,7 @@ __builtin__.sync = sync
 __builtin__.lock = lock
 
 from mico.util.storage import FileStorage
-__builtin__.env.storage = FileStorage(cache_path)
+__builtin__.env.storage = FileStorage(mico.path.get_cache_path())
 
 def save(key, data):
     "Save a data in the global cache catalog."
