@@ -10,7 +10,6 @@ import random
 import pkgutil
 import inspect
 
-#import mico
 import mico.path
 import mico.util
 import mico.hook
