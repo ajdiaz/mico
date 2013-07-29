@@ -11,7 +11,6 @@ import pkgutil
 import inspect
 
 import mico
-import mico.fifo
 import mico.util
 import mico.hook
 import mico.output
