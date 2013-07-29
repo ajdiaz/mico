@@ -7,6 +7,10 @@ import hashlib
 
 import mico.output
 
+
+__all__ = [ "r53", "ec2" ]
+
+
 def import_code(code, name, add_to_sys_modules=0):
     """Import dynamically generated code as a module. code is the
     object containing the code (a string, a file handle or an
@@ -37,7 +41,7 @@ def import_code(code, name, add_to_sys_modules=0):
     return module
 
 
-class Template(type(__builtins__)):
+class Stack(type(__builtins__)):
     @classmethod
     def load(cls, mod, fun=None):
         if mod.startswith("http://") or mod.startswith("https://"):
@@ -46,7 +50,7 @@ class Template(type(__builtins__)):
                 mico.output.debug("loaded remote template: %s" % mod)
                 mod = _mod
             except urllib2.HTTPError:
-                raise ImportError("Unable to download template")
+                raise ImportError("Unable to download stack")
         else:
             mod = __import__(mod, globals(), locals(), fun, -1)
         if fun:
@@ -54,4 +58,5 @@ class Template(type(__builtins__)):
         else:
             fun = None
         return (mod, fun)
+
 
