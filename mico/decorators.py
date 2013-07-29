@@ -6,6 +6,7 @@ from threading import Thread
 from functools import wraps
 
 from fabric.api import parallel as fabric_parallel
+from fabric.api import serial as fabric_serial
 from mico.util.mutex import Mutex
 
 import mico.output
