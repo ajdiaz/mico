@@ -5,6 +5,12 @@
 from threading import Lock
 
 class Mutex(object):
+    """Models a mutex object which provides a lock over an object,
+    identified by name.
+
+    :type name: str
+    :param name: the name of the lock to be created (must be unique)
+    """
     _current_mutex = {}
 
     def __init__(self, name):
@@ -13,6 +19,9 @@ class Mutex(object):
 
     @classmethod
     def get_mutex(cls, name="_default"):
+        """Class method to create unique mutex, with name or using default
+        name "_default".
+        """
         if name not in Mutex._current_mutex:
             Mutex._current_mutex[name] = Mutex(name)
 
