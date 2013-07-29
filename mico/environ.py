@@ -3,7 +3,7 @@
 # vim:fenc=utf-8:
 
 """The environ module provides a number of environ variables, which will be
-used in your definitions and templates to ensure the correct way to do
+used in your definitions and stacks to ensure the correct way to do
 actions. Usual environments are related with remote host, like installed
 operating system, versions and so on.
 
@@ -19,7 +19,7 @@ def environ(name):
     """Decorator to set new environment variables. Using this decoration you
     can create environment dynamic properties, for example, you can set new
     one environ called 'uptime' which contains the remote system uptime
-    using the core template function 'uptime'::
+    using the core stack function 'uptime'::
 
         @environ('uptime')
         def _env_uptime():

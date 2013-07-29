@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The EC2 volume template provides methods to work with AWS EC2 EBS volumes.
+"""The ec2.ebs library provides methods to work with AWS EC2 EBS volumes.
 """
 
 import time
@@ -12,7 +12,7 @@ import mico.output
 
 from mico.lib.aws.ec2 import ec2_connect
 from mico.lib.aws.ec2 import ec2_tag_volumes
-from mico.lib.aws.ec2 import EC2TemplateError
+from mico.lib.aws.ec2 import EC2LibraryError
 
 
 def ebs_ensure(size, zone=None, instance=None, device=None, tags={},
@@ -46,7 +46,7 @@ def ebs_ensure(size, zone=None, instance=None, device=None, tags={},
     """
 
     if zone is None and instance is None:
-        raise EC2TemplateError("volume require zone or instance to be created.")
+        raise EC2LibraryError("volume require zone or instance to be created.")
 
     if zone is None:
         zone = instance.placement

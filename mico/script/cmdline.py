@@ -15,18 +15,12 @@ import mico.util
 import mico.hook
 import mico.output
 
-from mico.template import Template
+from mico.stack import Stack
+
 
 class MicoCmdline(cmd.Cmd):
     """The command line console which will be invoked from mico script."""
 
-    template_path = [
-            "templates",
-            "data",
-            "content",
-            "files",
-            "sources"
-    ]
     ruler     = '-'
     prompt    = mico.output.prompt_usr
     intro     = mico.output.prompt_msg + random.choice(mico.output.intros)
@@ -193,15 +187,13 @@ class MicoCmdline(cmd.Cmd):
             fun = "main"
 
         try:
-            mod, fun = Template.load(mod, [fun])
+            mod, fun = Stack.load(mod, [fun])
             if not mod.__name__.startswith("_mico_dm_"):
                 mico.config_path.append(os.path.dirname(mod.__file__))
-                for path in self.template_path:
-                    mico.config_path.append(os.path.join(os.path.dirname(mod.__file__), path))
         except ImportError, e:
-            mico.output.error("template '%s' not found: %s." % (mod,e,))
+            mico.output.error("stack '%s' not found: %s." % (mod,e,))
         except AttributeError, e:
-            mico.output.error("function '%s' not found in template '%s': %s" % ( fun[0], mod, e, ))
+            mico.output.error("entry point '%s' not found in stack '%s': %s" % ( fun[0], mod, e, ))
         else:
             mico.execute(fun, False, *tuple(lexer[1:]))
 
@@ -256,10 +248,10 @@ def main():
                                       help="don't execute actions in parallel",
                                       default=True)
 
-    cmdopt.add_argument("template",
+    cmdopt.add_argument("stack",
                         nargs='*',
                         default=None,
-                        help="The template:function to execute or an internal command")
+                        help="The <stack>[:<entry point>] to execute or an internal command")
 
     args = cmdopt.parse_args()
 
@@ -287,10 +279,10 @@ def main():
         env.ec2_region = args.region
         env.args = args
 
-        if len(args.template) == 0:
+        if len(args.stack) == 0:
             cmdlne.cmdloop()
         else:
-            cmdlne.onecmd(" ".join(args.template))
+            cmdlne.onecmd(" ".join(args.stack))
     except Exception, e:
         if "debug" in env.loglevel:
             raise

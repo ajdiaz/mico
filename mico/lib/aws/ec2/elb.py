@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The ELB submodule provide a way to manage Elastic Load Balancer resources
+"""The ec2.elb library provide a way to manage Elastic Load Balancer resources
 from AWS.
 """
 
@@ -16,7 +16,7 @@ from boto.ec2.elb import HealthCheck
 import boto.ec2.elb
 
 import mico.output
-from mico.lib.aws.ec2 import EC2TemplateError
+from mico.lib.aws.ec2 import EC2LibraryError
 from mico.lib.aws.ec2 import ec2_connect
 
 
@@ -25,9 +25,9 @@ def elb_connect(region=None, *args, **kwargs):
     by environment, as also optional region in arguments.
     """
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise EC2TemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise EC2LibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise EC2TemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise EC2LibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     if not region:
         region = env.get("ec2_region")

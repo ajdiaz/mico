@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The sg template provides methods to work with AWS EC2 security
+"""The sg library provides methods to work with AWS EC2 security
 groups.
 """
 

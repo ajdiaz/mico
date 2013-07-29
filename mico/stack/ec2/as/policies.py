@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The policies template provides functions to handle EC2 autoscaling groups
+"""The policies stack provides functions to handle EC2 autoscaling groups
 policies.
 """
 

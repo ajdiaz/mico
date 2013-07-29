@@ -47,7 +47,7 @@ class Stack(type(__builtins__)):
         if mod.startswith("http://") or mod.startswith("https://"):
             try:
                 _mod = import_code(urllib2.urlopen(mod).read(),"_mico_dm_%s" % hashlib.sha1("mod").hexdigest(), True)
-                mico.output.debug("loaded remote template: %s" % mod)
+                mico.output.debug("loaded remote stack: %s" % mod)
                 mod = _mod
             except urllib2.HTTPError:
                 raise ImportError("Unable to download stack")

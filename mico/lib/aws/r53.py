@@ -2,27 +2,28 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The route53 module offers functions to handle AWS Route53 DNS records."""
+"""The r53 library offers functions to handle AWS Route53 DNS records.
+"""
 
 from os import environ as os_environ
 from fnmatch import fnmatch
 from boto.route53.connection import Route53Connection
 
-class Route53TemplateError(Exception):
-    """Models a Route53 template error."""
+class R53LibraryError(Exception):
+    """Models a R53 library error."""
 
 def r53_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services Route53, using identify provided
     by environment, as also optional region in arguments.
 
     .. note:: The region parameter is allowed, but do nothing, still here
-        for future API compatibility and orthogonality between templates.
+        for future API compatibility and orthogonality between libraries.
     """
 
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise Route53TemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise R53LibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise Route53TemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise R53LibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     connection = Route53Connection(
             os_environ.get("AWS_ACCESS_KEY_ID"),

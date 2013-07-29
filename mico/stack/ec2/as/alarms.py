@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The alarms template provides function to handle alarms related with EC2
+"""The alarms stack provides function to handle alarms related with EC2
 autoscaling groups.
 """
 

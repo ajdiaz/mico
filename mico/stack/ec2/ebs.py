@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""EBS template provides functions to work with AWS EC2 volumes.
+"""EBS stack provides functions to work with AWS EC2 volumes.
 """
 
 import sys

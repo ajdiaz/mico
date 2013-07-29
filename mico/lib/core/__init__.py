@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The core template provide a number of functions to work with mico. These
+"""The core library provide a number of functions to work with mico. These
 functions will be available once the module is imported. For source code
 readability purposes each function type will be splitted in submodules, but
 for standard use, just need to import the core one. """

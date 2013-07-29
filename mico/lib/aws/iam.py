@@ -2,8 +2,8 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The IAM module offers functions to handle AWS users, groups, permissions
-and certificates
+"""The IAM library offers functions to handle AWS users, groups, permissions
+and certificates.
 """
 
 from os import environ as os_environ
@@ -12,21 +12,21 @@ from boto.iam.connection import IAMConnection
 
 import mico.output
 
-class IAMTemplateError(Exception):
-    """Models a IAM template error."""
+class IAMLibraryError(Exception):
+    """Models an IAM library error."""
 
 def iam_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services IAM, using identify provided
     by environment, as also optional region in arguments.
 
     .. note:: The region parameter is allowed, but do nothing, still here
-        for future API compatibility and orthogonality between templates.
+        for future API compatibility and orthogonality between libraries.
     """
 
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise IAMTemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise IAMLibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise IAMTemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise IAMLibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     connection = IAMConnection(
             os_environ.get("AWS_ACCESS_KEY_ID"),

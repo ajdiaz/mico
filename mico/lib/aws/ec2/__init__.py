@@ -2,8 +2,8 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The EC2 template provide a number of subtemplates to handle EC2 cloud
-resources, like instance, volumes and so on.
+"""The EC2 librart provide a number of functions and modules to
+handle EC2 cloud resources, like instance, volumes and so on.
 
 Example of usage in host definitions::
 
@@ -21,7 +21,7 @@ from boto.ec2.connection import EC2Connection
 
 import mico.output
 
-class EC2TemplateError(Exception):
+class EC2LibraryError(Exception):
     """Model an exception related with EC2 API."""
 
 
@@ -30,9 +30,9 @@ def ec2_connect(region=None):
     by environment, as also optional region in arguments.
     """
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise EC2TemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise EC2LibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise EC2TemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise EC2LibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     if not region:
         region = env.get("ec2_region")

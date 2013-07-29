@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The EC2 autoscale template provides methods to work with AWS autoscale
+"""The EC2 autoscale library provides methods to work with AWS autoscale
 techniques.
 """
 
@@ -19,7 +19,7 @@ from boto.ec2.autoscale import ScalingPolicy
 from boto.ec2.autoscale import Tag
 
 import mico.output
-from mico.lib.aws.ec2 import EC2TemplateError
+from mico.lib.aws.ec2 import EC2LibraryError
 from mico.lib.aws.ec2 import ec2_connect, get_region
 from mico.lib.aws.ec2 import ec2_tag_volumes
 from mico.lib.aws.ec2.cw import cw_connect, _cw_define, cw_exists
@@ -38,9 +38,9 @@ def as_connect(region=None, *args, **kwargs):
     by environment, as also optional region in arguments.
     """
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise EC2TemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise EC2LibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise EC2TemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise EC2LibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     if not region:
         region = env.get("ec2_region")
@@ -60,13 +60,13 @@ def as_connect(region=None, *args, **kwargs):
     return connection
 
 def as_config_exists(name):
-    """Return the instance template with specific name."""
+    """Return the instance config with specific name."""
     connection = as_connect()
     return connection.get_all_launch_configurations(names=[name])
 
 def as_config(name, ami, force=False, *args, **kwargs):
-    """Create a template instance to be used in autoscale group. In general
-    this template will be defined as another standalone instance, according
+    """Create a instance config to be used in autoscale group. In general
+    this config will be defined as another standalone instance, according
     to paramenters for :func:`ec2_instance` function.
 
     :type ami: string
@@ -243,8 +243,7 @@ def as_ensure(
     :param zones: a list of the availability zones where autoscale group
         will be working on.
 
-    :type instance: instance_template object
-    :param instance: an instance template, created by as_instance.
+    :param instance: an instance config, created by :func:`as_config`.
 
     :type balancers: list of balancers
     :param balancers: a list of balancers where new instances will be
@@ -410,10 +409,10 @@ def as_delete_policy(name, autoscale_group=None):
     return _x
 
 def as_delete_config(name):
-    """Remove a config template
+    """Remove an autoscaling config
 
     :type name: str
-    :param name: the name of the config template
+    :param name: the name of the config to be removed
     """
     conn = as_connect()
     _x = conn.delete_launch_configuration(name)

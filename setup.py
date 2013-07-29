@@ -53,7 +53,7 @@ setup(
     license = "GPL",
     entry_points={
         'console_scripts': [
-            'mico = mico.scripts.cmdline:main',
+            'mico = mico.script.cmdline:main',
         ]
     },
     classifiers=[

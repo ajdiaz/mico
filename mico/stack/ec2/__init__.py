@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""EC2 template to handle actions over EC2 infrastructure.
+"""EC2 stack to handle actions over EC2 infrastructure.
 """
 import sys
 import mico

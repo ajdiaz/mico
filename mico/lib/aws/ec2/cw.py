@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The cloudwatch module allows to access to AWS Cloud Watch API
+"""The ec2.cw library allows to access to AWS Cloud Watch API
 """
 
 from os import environ as os_environ
@@ -11,7 +11,7 @@ from boto.ec2.cloudwatch import CloudWatchConnection
 from boto.ec2.cloudwatch import MetricAlarm
 
 import mico.output
-from mico.lib.aws.ec2 import EC2TemplateError
+from mico.lib.aws.ec2 import EC2LibraryError
 
 import boto.ec2.cloudwatch
 
@@ -20,9 +20,9 @@ def cw_connect(region=None, *args, **kwargs):
     by environment, as also optional region in arguments.
     """
     if not os_environ.get("AWS_ACCESS_KEY_ID", None):
-        raise EC2TemplateError("Environment variable AWS_ACCESS_KEY_ID is not set.")
+        raise EC2LibraryError("Environment variable AWS_ACCESS_KEY_ID is not set.")
     if not os_environ.get("AWS_SECRET_ACCESS_KEY", None):
-        raise EC2TemplateError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
+        raise EC2LibraryError("Environment variable AWS_SECRET_ACCESS_KEY is not set.")
 
     if not region:
         region = env.get("ec2_region")

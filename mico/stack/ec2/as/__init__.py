@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-"""The as template provides function to handle EC2 autoscaling groups.
+"""The as stack provides function to handle EC2 autoscaling groups.
 """
 
 import sys

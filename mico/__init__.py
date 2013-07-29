@@ -10,7 +10,7 @@ config_path = [
         os.curdir,
         os.path.join(os.environ.get("HOME","/"), ".config/mico"),
         "/etc/mico",
-        os.path.join(os.path.dirname(__file__), "templates"),
+        os.path.join(os.path.dirname(__file__), "stack"),
         os.path.join(os.curdir, "files")
 ]
 
