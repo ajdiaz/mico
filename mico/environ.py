@@ -8,37 +8,20 @@ actions. Usual environments are related with remote host, like installed
 operating system, versions and so on.
 
 Also, this module provides a decorator to create new environment
-properties."""
+properties.
+"""
 
 import sys
 
-import mico
+from mico.decorators import environ
+
+from mico.lib.core import file_exists
+from mico.lib.core import file_read
+from mico.lib.core import network_address
+from mico.lib.core import network_interfaces
+from mico.lib.core import network_nameservers
+
 from mico.util.dicts import AttrLazyDict
-
-def environ(name):
-    """Decorator to set new environment variables. Using this decoration you
-    can create environment dynamic properties, for example, you can set new
-    one environ called 'uptime' which contains the remote system uptime
-    using the core stack function 'uptime'::
-
-        @environ('uptime')
-        def _env_uptime():
-            return mico.lib.core.uptime()
-
-    Then you can use the new custom environ in the form::
-
-        print env.custom.uptime
-
-    Or in the old and good dictionary style::
-
-        print env.custom["uptime"]
-
-    """
-
-    def _decorator(fn):
-        setattr(sys.modules[__name__], name, fn)
-        mico.env.custom[name] = fn
-    return _decorator
 
 
 @environ('kernel')
@@ -47,8 +30,6 @@ def _env_kernel():
     """
     return mico.run("uname -s")[0].lower()
 
-from mico.lib.core import file_exists
-from mico.lib.core import file_read
 
 @environ('operating_system')
 def _env_operation_system():
@@ -100,8 +81,7 @@ def _env_operation_system():
     else:
         return "unknown"
 
-from mico.lib.core import network_address
-from mico.lib.core import network_interfaces
+
 @environ('ipaddr')
 def _env_ipaddr():
     """Returns a dictionary with the IP address of the remote hosts,
@@ -117,7 +97,7 @@ def _env_ipaddr():
         ret[iface] = network_address(iface)
     return ret
 
-from mico.lib.core import network_nameservers
+
 @environ('nameservers')
 def _env_nameservers():
     """Returns the nameserver configured in the remote host.

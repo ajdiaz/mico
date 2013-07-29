@@ -11,8 +11,10 @@ from mico.util.mutex import Mutex
 
 import mico.output
 
+
 parallel = fabric_parallel
 serial = fabric_serial
+
 
 def async(func):
     """Function decorator, intended to make "func" run in a separate
@@ -48,6 +50,7 @@ def async(func):
             return func(*args, **kwargs)
 
     return _inner
+
 
 def sync(func):
     """Function decorator, intended to make "func" wait for threading async
@@ -103,4 +106,31 @@ def lock(f):
         with Mutex.get_mutex(f.__name__):
             return f(*args, **kw)
     return _f
+
+
+def environ(name):
+    """Decorator to set new environment variables. Using this decoration you
+    can create environment dynamic properties, for example, you can set new
+    one environ called 'uptime' which contains the remote system uptime
+    using the core stack function 'uptime'::
+
+        @environ('uptime')
+        def _env_uptime():
+            return mico.lib.core.uptime()
+
+    Then you can use the new custom environ in the form::
+
+        print env.custom.uptime
+
+    Or in the old and good dictionary style::
+
+        print env.custom["uptime"]
+
+    """
+
+    def _decorator(fn):
+        setattr(sys.modules[__name__], name, fn)
+        mico.env.custom[name] = fn
+    return _decorator
+
 
