@@ -52,7 +52,7 @@ def elb_connect(region=None, *args, **kwargs):
 
 
 def elb_check(target, interval=20, healthy_threshold=3,
-        unhealthy_threshold=5):
+              unhealthy_threshold=5, timeout=5):
     """Create a new ELB check.
 
     :type interval: int
@@ -66,8 +66,9 @@ def elb_check(target, interval=20, healthy_threshold=3,
     .. _HealthCheck: http://docs.amazonwebservices.com/ElasticLoadBalancing/latest/APIReference/API_HealthCheck.html
     """
     return HealthCheck(
-            target   = target,
+            target = target,
             interval = interval,
+            timeout = timeout,
             healthy_threshold = healthy_threshold,
             unhealthy_threshold = unhealthy_threshold
     )
