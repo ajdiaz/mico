@@ -7,8 +7,8 @@ support post action hooks."""
 
 from functools import wraps
 
-import mico
 import mico.output
+import mico.run
 
 from __builtin__ import env
 
@@ -85,7 +85,7 @@ def add_hooks(pre=None, pre_args=(), pre_kwargs={},
                 r = f(*args, **kwargs)
             except SystemExit:
                 pass
-            except mico.ExecutionError as e:
+            except mico.run.ExecutionError as e:
                 mico.output.error(str(e))
             except:
                 raise

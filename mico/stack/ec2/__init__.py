@@ -11,7 +11,7 @@ import mico.output
 from mico.lib.aws.ec2 import *
 
 
-__all__ = [ "ebs" "as" ]
+__all__ = [ "ebs", "as" ]
 
 
 def ls(*args):
