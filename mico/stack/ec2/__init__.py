@@ -6,8 +6,9 @@
 """
 
 import sys
-import mico
+import mico.run
 import mico.output
+
 from mico.lib.aws.ec2 import *
 
 
@@ -87,7 +88,7 @@ def run(*args):
     env.roles.append('mico')
 
     if len(env.roledefs['mico']) > 0:
-        mico.run(" ".join(args[1:]))
+        mico.run.run(" ".join(args[1:]))
 
 
 def main(*args):
