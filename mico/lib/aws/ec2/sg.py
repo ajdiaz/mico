@@ -118,7 +118,7 @@ def sg_ensure(name, description, vpc_id=None, rules=[], force=False):
     return _obj
 
 def sg_exists(name):
-    """Return the ecurity group with name passed as argument for specified
+    """Return the security group with name passed as argument for specified
     region or None if it does not exists.
     """
     connection = ec2_connect()
