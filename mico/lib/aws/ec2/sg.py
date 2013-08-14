@@ -14,7 +14,8 @@ from boto.ec2.securitygroup import SecurityGroup as SG_Instance
 
 import mico.output
 from mico.util.dicts import AttrDict
-from mico.lib.aws.ec2 import ec2_connect
+from mico.lib.aws.ec2 import ec2_connect, ec2_list
+from mico.lib.aws.ec2 import EC2LibraryError
 
 def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_port=None):
     """Return a representation of a specific security rule.
@@ -118,7 +119,7 @@ def sg_ensure(name, description, vpc_id=None, rules=[], force=False):
     return _obj
 
 def sg_exists(name):
-    """Return the ecurity group with name passed as argument for specified
+    """Return the security group with name passed as argument for specified
     region or None if it does not exists.
     """
     connection = ec2_connect()
@@ -131,4 +132,45 @@ def sg_exists(name):
     else:
         return None
 
+def _sg_revoke_all_rules(name, target):
+    for rule in name.rules:
+        dr = rule.__dict__
+        if target.id in [g.group_id for g in dr["grants"]]:
+            name.revoke(
+                ip_protocol = dr["ip_protocol"],
+                from_port = dr["from_port"],
+                to_port = dr["to_port"],
+                src_group = target
+            )
 
+def sg_delete(name, force=False):
+    """Deletes a security group.
+    If you attempt to delete a security group that contains instances, or is referenced
+    by another security group, the operation fails. Use the "force" flag to delete a security
+    group that is referenced by another security group.
+
+    :type name: string
+    :param name: The name of the security group
+
+    :type force: boolean
+    :param force: Delete a security group even when it is referenced by another security group
+    by deleting the referencing rules.
+    """
+    connection = ec2_connect()
+
+    target = sg_exists(name)
+    if target:
+        if force:
+            instances = [x for x in ec2_list('sec:%s' % (target.name, ))]
+            if instances:
+                raise EC2LibraryError('%s is in use by %s.' % (target.name, ",".join(map(lambda x:x.name, instances)),))
+            _sg = connection.get_all_security_groups()
+            for sg in filter(lambda x: x.name != target.name, _sg):
+                mico.output.debug("Forcing ")
+                _sg_revoke_all_rules(sg, target)
+        connection.delete_security_group(target.name)
+        # boto.ec2.connection.delete_security_group() raises boto.exception.EC2ResponseError
+        # if the target security group is referenced by another security group
+        return target
+    else:
+        raise EC2LibraryError('%s does not exist.' % (name, ))
