@@ -136,6 +136,7 @@ def _sg_revoke_all_rules(name, target):
     for rule in name.rules:
         dr = rule.__dict__
         if target.id in [g.group_id for g in dr["grants"]]:
+            mico.output.debug("Removed from %s the rule %s %s-%s that references %s" % (name.name, dr["ip_protocol"], dr["from_port"], dr["to_port"], target.name, ))
             name.revoke(
                 ip_protocol = dr["ip_protocol"],
                 from_port = dr["from_port"],
@@ -166,7 +167,6 @@ def sg_delete(name, force=False):
                 raise EC2LibraryError('%s is in use by %s.' % (target.name, ",".join(map(lambda x:x.name, instances)),))
             _sg = connection.get_all_security_groups()
             for sg in filter(lambda x: x.name != target.name, _sg):
-                mico.output.debug("Forcing ")
                 _sg_revoke_all_rules(sg, target)
         connection.delete_security_group(target.name)
         # boto.ec2.connection.delete_security_group() raises boto.exception.EC2ResponseError
