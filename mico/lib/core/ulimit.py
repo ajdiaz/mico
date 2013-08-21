@@ -5,6 +5,9 @@
 """The ulimit core submodule provide a useful way to manage system
 ulimits."""
 
+from mico import run
+
+
 def ulimit_ensure(limits):
     """Ensure user limits.
 
@@ -20,9 +23,8 @@ def ulimit_ensure(limits):
         limits = limits.split("\n")
 
     # Remove extra spaces
-    limits = map(lambda x:' '.join(x.split()), limits)
+    limits = map(lambda x: ' '.join(x.split()), limits)
 
     for limit in limits:
         _x = run("sed 's:[ \\t][ \\t]*: :g' /etc/security/limits.conf " + \
-                 "| grep '%s' || ( echo '%s' >> /etc/security/limits.conf; )" % (limit,limit,))[0]
-
+                 "| grep '%s' || ( echo '%s' >> /etc/security/limits.conf; )" % (limit, limit,))[0]

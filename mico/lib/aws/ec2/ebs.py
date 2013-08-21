@@ -85,7 +85,7 @@ def ebs_ensure(size, zone=None, instance=None, device=None, tags={},
         _obj.update()
 
     if tags:
-        connection.create_tags([_obj.id],tags)
+        connection.create_tags([_obj.id], tags)
 
     if device and instance:
         connection.attach_volume(_obj.id, instance.id, device)
@@ -104,8 +104,9 @@ def ebs_exists(tags={}):
     connection = ec2_connect()
 
     _x = connection.get_all_volumes(None,
-            dict(map(lambda (x,y):("tag:%s" % x, y), tags.items())))
-    return filter(lambda x:x.status == 'in-use', _x)
+            dict(map(lambda (x, y): ("tag:%s" % x, y), tags.items())))
+    return filter(lambda x: x.status == 'in-use', _x)
+
 
 def ebs_delete(volumes):
     """Delete volumes passed as argument.
@@ -117,7 +118,7 @@ def ebs_delete(volumes):
     connection = ec2_connect()
 
     if not isinstance(volumes, list):
-        volumes = [ volumes ]
+        volumes = [volumes]
 
     for x in volumes:
         if isinstance(x, str):
@@ -126,6 +127,7 @@ def ebs_delete(volumes):
         else:
             connection.delete_volume(x.id)
             mico.output.info("Remove volume: %s" % x.id)
+
 
 def ebs_detach(volumes, force=False):
     """Detach a number of volumes passed as arguments.
@@ -136,7 +138,7 @@ def ebs_detach(volumes, force=False):
     connection = ec2_connect()
 
     if not isinstance(volumes, list):
-        volumes = [ volumes ]
+        volumes = [volumes]
 
     for x in volumes:
         if isinstance(x, str):
@@ -156,15 +158,17 @@ def ebs_list(*args):
     """
     conn = ec2_connect()
     vol = conn.get_all_volumes()
-    ins = dict(map(lambda x:(x.id,x), [i for r in conn.get_all_instances() for i in r.instances]))
+    ins = dict(map(lambda x: (x.id, x), [i for r in conn.get_all_instances() for i in r.instances]))
     args = args or ('*',)
 
     for x in vol:
         x.name = x.id
         for arg in args:
-            if x.tags.get("Name",False) and fnmatch(x.tags["Name"], arg):
-               x.device = x.attach_data.device
-               x.instance_id = ("%s (%s)" % (ins[x.attach_data.instance_id].tags.get("Name",None), x.attach_data.instance_id)) \
-                               if x.attach_data.id is not None else None
-               yield x
+            if x.tags.get("Name", False) and fnmatch(x.tags["Name"], arg):
+                x.device = x.attach_data.device
+                x.instance_id = ("%s (%s)" %
+                                 (ins[x.attach_data.instance_id].tags.get("Name", None),
+                                  x.attach_data.instance_id)) if x.attach_data.id is not None \
+                                 else None
+                yield x
 

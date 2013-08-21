@@ -7,8 +7,6 @@ policies.
 """
 
 import sys
-import fnmatch
-
 import mico.output
 from mico.lib.aws.ec2 import *
 
@@ -27,7 +25,7 @@ def ls(*args):
 
 def main(*args):
     if len(args) > 0:
-        fn = getattr(sys.modules[__name__],args[0])
+        fn = getattr(sys.modules[__name__], args[0])
         return fn(*args[1:])
     else:
         return ls()

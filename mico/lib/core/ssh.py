@@ -9,10 +9,12 @@ import os
 
 import mico.output
 from mico.lib.core.dir import dir_ensure
-from mico.lib.core.sudo import mode_sudo
 from mico.lib.core.user import user_exists
 from mico.lib.core.file import file_attribs, file_exists, \
                                file_read, file_append, file_write
+from __builtin__ import run
+from Runtime import ExecutionError
+
 
 def ssh_keygen(user, key_type="rsa"):
     """Generates a pair of ssh keys in the user's home .ssh directory.
@@ -33,13 +35,14 @@ def ssh_keygen(user, key_type="rsa"):
             ))[0]
             mico.output.info("created ssh-key for user %s" % user)
             if _x.return_code == 0:
-                _x = file_attribs(os.path.join(d["home"],".ssh/id_%s" % key_type), owner=user)
+                _x = file_attribs(os.path.join(d["home"], ".ssh/id_%s" % key_type), owner=user)
                 if _x.return_code == 0:
-                    return file_attribs(os.path.join(d["home"],".ssh/id_%s.pub" % key_type), owner=user)
+                    return file_attribs(os.path.join(d["home"], ".ssh/id_%s.pub" % key_type), owner=user)
                 else:
                     return _x
             else:
                 return _x
+
 
 def ssh_authorize(user, key):
     """Adds the given key to the '.ssh/authorized_keys' for the given

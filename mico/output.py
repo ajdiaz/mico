@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
@@ -9,12 +10,13 @@ import inspect
 import mico
 from mico.lib.core.local import is_local
 
+
 intros = [
         "the monkey army for the cloud",
         "just see! a monkey flying in the cloud",
         "uuuh uhuh uhuhuhuhu uh uh uh!",
         "the monkey driven cloud management",
-        "oh no! monkys are learning to fly!",
+        "oh no! monkeys are learning to fly!",
         "take your stinking paws off me, you dammed dirty ape!"
 ]
 
@@ -26,7 +28,7 @@ monkey = """
             \ '- ,\.-"`` ``"-./, -' /
              `'-' /_   ^ ^   _\\ '-'`
              .--'|  \._   _./  |'--.
-           /`    \   \ `~` /   /    `\\ 
+           /`    \   \ `~` /   /    `\\
           /       '._ '---' _.'       \\
          /           '~---~'   |       \\
         /        _.             \\       \\
@@ -49,13 +51,13 @@ monkey = """
 dump_keys = [
         "created_time", "default_cooldown", "desired_capacity", "min_size",
         "max_size", "health_check_period", "health_check_type",
-        "launch_config_name", 'reason', 'description','endElement', 'end_time',
+        "launch_config_name", 'reason', 'description', 'endElement', 'end_time',
         'progress', 'startElement', 'start_time', 'status_code',
         'adjustment_type', 'alarms', 'as_name', 'cooldown',
-        'min_adjustment_step','scaling_adjustment', "status",
+        'min_adjustment_step', 'scaling_adjustment', "status",
         'comparison', 'dimensions', 'disable_actions', 'create_time',
         'enable_actions', 'evaluation_periods', 'zone',
-        'last_updated','metric', 'instance_id', 'id', 'state',
+        'last_updated', 'metric', 'instance_id', 'id', 'state',
         'period', 'set_state', 'autoscaling_group', 'snapshot_id',
         'state_reason', 'state_value', 'statistic', 'type',
         'threshold', 'total_instances', 'device', 'size',
@@ -70,11 +72,12 @@ prompt_inf = os.environ.get("MICO_PS3", None) or "[33;1mmico[0;1m:[0;0m "
 prompt_msg = os.environ.get("MICO_PS4", None) or "[34;1mmico[0;1m:[0;0m "
 prompt_dbg = os.environ.get("MICO_PS4", None) or "[30;1mmico[0;1m:[0;0m "
 
-env.loglevel = set([ "abort", "error", "warn", "info" ])
+env.loglevel = set(["abort", "error", "warn", "info"])
+
 
 def label():
     if env.get("host_label", False) and \
-       env.get("host_string",False) and \
+       env.get("host_string", False) and \
        env["host_label"][env["host_string"]]:
         return env["host_label"][env["host_string"]]
 
@@ -86,41 +89,50 @@ def label():
 
     return "cloud"
 
+
 def stack():
     return inspect.stack()[2][3]
+
 
 def abort(message):
     if "abort" in env.loglevel:
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
     return message
 
+
 def error(message, *args, **kwargs):
     if "error" in env.loglevel:
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
     return message
+
 
 def warn(message):
     if "warn" in env.loglevel:
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
     return message
 
+
 def puts(message, *args, **kwargs):
     if "info" in env.loglevel:
         print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
     return message
+
 
 def info(message, *args, **kwargs):
     if "info" in env.loglevel:
         print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg, label(), stack(), message)
     return message
 
+
 def debug(message):
     if "debug" in env.loglevel:
         print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg, label(), stack(), message)
     return message
 
+
 def mute(*args, **kwargs):
     pass
+
 
 def _vars(obj):
     """Internal emulation for builtin var. Not all boto objects provides
@@ -130,8 +142,9 @@ def _vars(obj):
     #if hasattr(obj, "__dict__"):
     #    return vars(obj)
 
-    return { k.strip("_"): getattr(obj,k) for k in filter(lambda
-        x:not hasattr(getattr(obj,x),"__call__") and not x.startswith("__"), dir(obj)) }
+    return {k.strip("_"): getattr(obj, k) for k in filter(lambda
+        x: not hasattr(getattr(obj, x), "__call__") and not x.startswith("__"), dir(obj))}
+
 
 def _str(obj):
     if hasattr(obj, "name"):
@@ -143,22 +156,23 @@ def _str(obj):
     else:
         return str(obj)
 
+
 def dump(obj, layout="horizontal", color=True):
     if color:
-        s = "[33;1m%s[0;0m:" % getattr(obj, "name","None")
+        s = "[33;1m%s[0;0m:" % getattr(obj, "name", "None")
     else:
-        s = "%s:" % getattr(obj, "name","None")
+        s = "%s:" % getattr(obj, "name", "None")
 
     v = _vars(obj)
     for key in v:
         if key in dump_keys or "debug" in env.loglevel:
             if v[key] is None:
                 continue
-            if isinstance(v[key],list):
-                _val = ", ".join(map(_str,v[key]))
+            if isinstance(v[key], list):
+                _val = ", ".join(map(_str, v[key]))
             elif isinstance(v[key], dict):
                 _val = "{ "
-                _val += ", ".join(map(lambda x:"%s:%s" % (x[0], _str(x[1]),), v[key].items()))
+                _val += ", ".join(map(lambda x: "%s:%s" % (x[0], _str(x[1]),), v[key].items()))
                 _val += " }"
             else:
                 _val = v[key]
@@ -167,12 +181,12 @@ def dump(obj, layout="horizontal", color=True):
             if layout == "vertical":
                 s += "\n  "
             if color:
-                s+=" %s = [0;1m%s[0;0m" % (key, _val)
+                s += " %s = [0;1m%s[0;0m" % (key, _val)
             else:
-                s+=" %s = %s" % (key, _val)
+                s += " %s = %s" % (key, _val)
 
     if layout == "vertical":
-        s+="\n"
+        s += "\n"
 
     print >> sys.stdout, s
 
@@ -180,7 +194,7 @@ def dump(obj, layout="horizontal", color=True):
 from fabric.state import output
 # XXX Supress some fabric messages, actually fabric message API is not very
 # useful nor well designed.
-output["debug"] =  False
+output["debug"] = False
 output["running"] = False
 output["stderr"] = False
 output["stdout"] = False
@@ -192,7 +206,7 @@ import fabric.operations
 # XXX fabric monkey patching for message output
 fabric.operations.abort = fabric.utils.abort = fabric.tasks.abort = abort
 fabric.operations.error = fabric.utils.error = fabric.tasks.error = mute
-fabric.operations.warn  = fabric.utils.warn  = fabric.tasks.warn  = mute
-fabric.operations.puts  = fabric.utils.puts  = fabric.utils.puts  = mute
-fabric.operations.fastprint = fabric.utils.fastprint  = fabric.utils.fastprint  = puts
+fabric.operations.warn = fabric.utils.warn = fabric.tasks.warn = mute
+fabric.operations.puts = fabric.utils.puts = fabric.utils.puts = mute
+fabric.operations.fastprint = fabric.utils.fastprint = fabric.utils.fastprint = puts
 

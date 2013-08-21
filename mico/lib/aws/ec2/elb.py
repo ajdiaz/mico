@@ -9,7 +9,6 @@ from AWS.
 from os import environ as os_environ
 
 from boto.exception import BotoServerError
-from boto.ec2 import get_region
 from boto.ec2.elb import ELBConnection
 from boto.ec2.elb import HealthCheck
 
@@ -18,6 +17,8 @@ import boto.ec2.elb
 import mico.output
 from mico.lib.aws.ec2 import EC2LibraryError
 from mico.lib.aws.ec2 import ec2_connect
+
+from mico import env
 
 
 def elb_connect(region=None, *args, **kwargs):
@@ -44,7 +45,7 @@ def elb_connect(region=None, *args, **kwargs):
     connection = ELBConnection(
             os_environ.get("AWS_ACCESS_KEY_ID"),
             os_environ.get("AWS_SECRET_ACCESS_KEY"),
-            region = region,
+            region=region,
             *args,
             **kwargs
     )
@@ -66,11 +67,11 @@ def elb_check(target, interval=20, healthy_threshold=3,
     .. _HealthCheck: http://docs.amazonwebservices.com/ElasticLoadBalancing/latest/APIReference/API_HealthCheck.html
     """
     return HealthCheck(
-            target = target,
-            interval = interval,
-            timeout = timeout,
-            healthy_threshold = healthy_threshold,
-            unhealthy_threshold = unhealthy_threshold
+            target=target,
+            interval=interval,
+            timeout=timeout,
+            healthy_threshold=healthy_threshold,
+            unhealthy_threshold=unhealthy_threshold
     )
 
 
@@ -117,9 +118,9 @@ def elb_ensure(name, listeners, check, zones=None, *args, **kwargs):
         zones = ec2_conn.get_all_zones()
 
     elb = connection.create_load_balancer(
-            name = name,
-            zones = zones,
-            listeners = listeners,
+            name=name,
+            zones=zones,
+            listeners=listeners,
             *args,
             **kwargs
     )

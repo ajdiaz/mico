@@ -6,9 +6,11 @@
 in sudo mode."""
 
 from mico.util.switch import Switcher
+from __builtin__ import env, run
 
 ENV_KEY_SUDO_PASSWORD = "sudo_password"
-ENV_KEY_SUDO_MODE     = "sudo_mode"
+ENV_KEY_SUDO_MODE = "sudo_mode"
+
 
 def sudo_password(password=None):
     """Set the password to be used with sudo
@@ -28,9 +30,11 @@ def sudo_password(password=None):
 
 mode_sudo = Switcher.from_key(ENV_KEY_SUDO_MODE, True)
 
+
 def is_sudo():
     """Return true if the current execution mode is sudo-enabled"""
     return mode_sudo.getValue(ENV_KEY_SUDO_MODE)
+
 
 def sudo(*args, **kwargs):
     """A wrapper to Fabric's run/sudo commands, using the

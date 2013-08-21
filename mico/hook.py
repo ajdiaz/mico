@@ -10,10 +10,11 @@ from functools import wraps
 import mico.output
 import mico.run
 
-from __builtin__ import env
+import mico.env
 
 # global variable for add_hooks()
 parent_task_name = ''
+
 
 def task_add_post_run_hook(hook, *args, **kwargs):
     '''Run hook after Fabric tasks have completed on all hosts
@@ -103,20 +104,24 @@ def add_hooks(pre=None, pre_args=(), pre_kwargs={},
 
 from Queue import Queue
 
+
 def add_hook(context, action, parameters=()):
     """Enqueue one action with action parameters in environment"""
 
     if context in env:
-        env[context].put((action,parameters))
+        env[context].put((action, parameters))
     else:
         env[context] = Queue()
-        env[context].put((action,parameters))
+        env[context].put((action, parameters))
+
 
 def add_pre_hook(action, parameters=()):
     return add_hook("pre_hook", action, parameters)
 
+
 def add_post_hook(action, parameters=()):
     return add_hook("post_hook", action, parameters)
+
 
 def run_hook(context):
     if context in env:
@@ -134,8 +139,10 @@ def run_hook(context):
     else:
         return []
 
+
 def run_pre_hook():
     return run_hook("pre_hook")
+
 
 def run_post_hook():
     return run_hook("post_hook")

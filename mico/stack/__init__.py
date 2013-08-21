@@ -8,7 +8,7 @@ import hashlib
 import mico.output
 
 
-__all__ = [ "r53", "ec2" ]
+__all__ = ["r53", "ec2"]
 
 
 def import_code(code, name, add_to_sys_modules=0):
@@ -30,7 +30,8 @@ def import_code(code, name, add_to_sys_modules=0):
 
     Returns a newly generated module.
     """
-    import sys,imp
+    import sys
+    import imp
 
     module = imp.new_module(name)
 
@@ -46,7 +47,7 @@ class Stack(type(__builtins__)):
     def load(cls, mod, fun=None):
         if mod.startswith("http://") or mod.startswith("https://"):
             try:
-                _mod = import_code(urllib2.urlopen(mod).read(),"_mico_dm_%s" % hashlib.sha1("mod").hexdigest(), True)
+                _mod = import_code(urllib2.urlopen(mod).read(), "_mico_dm_%s" % hashlib.sha1("mod").hexdigest(), True)
                 mico.output.debug("loaded remote stack: %s" % mod)
                 mod = _mod
             except urllib2.HTTPError:
@@ -58,5 +59,3 @@ class Stack(type(__builtins__)):
         else:
             fun = None
         return (mod, fun)
-
-

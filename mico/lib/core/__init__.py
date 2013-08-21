@@ -8,7 +8,7 @@ readability purposes each function type will be splitted in submodules, but
 for standard use, just need to import the core one. """
 
 from mico.lib.core.ssh import *
-from mico.lib.core.dir  import *
+from mico.lib.core.dir import *
 from mico.lib.core.file import *
 from mico.lib.core.sudo import *
 from mico.lib.core.user import *

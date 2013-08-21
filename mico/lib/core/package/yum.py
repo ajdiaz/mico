@@ -6,15 +6,21 @@
 packages and package repositories into a host using yum utility.
 """
 
+from __builtin__ import run
+from Runtime import ExecutionError
+
+
 def repository_ensure(repository):
     """Ensure that a yum repo is present.
     """
     raise Exception("Not implemented for Yum")
 
+
 def package_upgrade():
     """Upgrade (update) yum cache.
     """
     return run("yum -y update")[0]
+
 
 def package_update(package=None):
     """Upgrade a package.
@@ -22,12 +28,13 @@ def package_update(package=None):
     :type package: str or list or tuple
     :param pagage: the package(s) name to be updated or None for all.
     """
-    if package == None:
+    if package is None:
         return run("yum -y update")[0]
     else:
         if type(package) in (list, tuple):
             package = " ".join(package)
         return run("yum -y upgrade " + package)[0]
+
 
 def package_install(package, update=False):
     """Install a package
@@ -47,6 +54,7 @@ def package_install(package, update=False):
     if type(package) in (list, tuple):
         package = " ".join(package)
     return run("yum -y install %s" % (package))[0]
+
 
 def package_remove(package, autoclean=False):
     """Remove YUM package.

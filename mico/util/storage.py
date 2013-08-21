@@ -3,7 +3,7 @@
 # vim:fenc=utf-8:
 
 """This module provides different ways to store metadata on persistent and
-volalile storage.
+volatile storage.
 """
 
 import os
@@ -11,11 +11,14 @@ import git
 import json
 import hashlib
 
+#from __builtin__ import env
+
 
 class Storage(dict):
     """Models a basic storage. Just an abstraction, see other implementations
     for real use.
     """
+
 
 
 class FileStorage(Storage):
@@ -32,19 +35,20 @@ class FileStorage(Storage):
 
     def __setitem__(self, key, value):
         key = hashlib.sha1(str(key)).hexdigest()
-        with open(os.path.join(self.path, key),"w") as f:
+        with open(os.path.join(self.path, key), "w") as f:
             json.dump(value, f)
         self[key] = value
 
     def __getitem__(self, key):
         key = hashlib.sha1(str(key)).hexdigest()
-        if self.get(key,None):
+        if self.get(key, None):
             return self[key]
         else:
-            with open(os.path.join(self.path, key),"r") as f:
-                 _x = json.load(f)
-                 self[key] = _x
-                 return _x
+            with open(os.path.join(self.path, key), "r") as f:
+                _x = json.load(f)
+                self[key] = _x
+                return _x
+
 
 
 class RevisionStorage(Storage):
@@ -76,7 +80,7 @@ class RevisionStorage(Storage):
         except OSError:
             pass
         _path = os.path.join(self.path, key.strip("/"))
-        with open(_path,"w") as f:
+        with open(_path, "w") as f:
             f.write(value)
         self.repo.git.add(_path)
         self.repo.git.commit(
@@ -85,9 +89,8 @@ class RevisionStorage(Storage):
                 })
         )
 
-
     def __getitem__(self, key):
-        with open(os.path.join(self.path, key.strip("/")),"r") as f:
+        with open(os.path.join(self.path, key.strip("/")), "r") as f:
             return f.read()
 
     def __contains__(self, key):

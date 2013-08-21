@@ -20,18 +20,22 @@ from boto.ec2.autoscale import Tag
 
 import mico.output
 from mico.lib.aws.ec2 import EC2LibraryError
-from mico.lib.aws.ec2 import ec2_connect, get_region
-from mico.lib.aws.ec2 import ec2_tag_volumes
-from mico.lib.aws.ec2.cw import cw_connect, _cw_define, cw_exists
 from mico.lib.aws.ec2 import ec2_connect
+from mico.lib.aws.ec2.cw import cw_connect
+from mico.lib.aws.ec2.cw import _cw_define
+from mico.lib.aws.ec2.cw import cw_exists
+
+from mico import lock
+from mico import env
 
 
 @lock
 def _as_get_timestamp():
     # TODO: In the future this function will be in utils package.
     if not getattr(_as_get_timestamp, "_timestamp", None):
-        _as_get_timestamp._timestamp = time.strftime("%Y%m%d%H%S",time.localtime())
+        _as_get_timestamp._timestamp = time.strftime("%Y%m%d%H%S", time.localtime())
     return _as_get_timestamp._timestamp
+
 
 def as_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services EC2, using identify provided
@@ -52,17 +56,19 @@ def as_connect(region=None, *args, **kwargs):
     connection = AutoScaleConnection(
             os_environ.get("AWS_ACCESS_KEY_ID"),
             os_environ.get("AWS_SECRET_ACCESS_KEY"),
-            region = region,
+            region=region,
             *args,
             **kwargs
     )
 
     return connection
 
+
 def as_config_exists(name):
     """Return the instance config with specific name."""
     connection = as_connect()
     return connection.get_all_launch_configurations(names=[name])
+
 
 def as_config(name, ami, force=False, *args, **kwargs):
     """Create a instance config to be used in autoscale group. In general
@@ -118,12 +124,12 @@ def as_config(name, ami, force=False, *args, **kwargs):
     _sgs = None
     if "security_groups" in kwargs:
         if not isinstance(kwargs["security_groups"], list):
-            _sgs = [ kwargs["security_groups"] ]
+            _sgs = [kwargs["security_groups"]]
         else:
             _sgs = kwargs["security_groups"]
 
         _sgs = map(
-                lambda x:x.name if isinstance(x, SecurityGroup) else x,
+                lambda x: x.name if isinstance(x, SecurityGroup) else x,
                 _sgs
         )
 
@@ -143,6 +149,7 @@ def as_config(name, ami, force=False, *args, **kwargs):
     mico.output.info("create new config %s" % name)
     return config
 
+
 def as_pause(group):
     """Pause autoscaling group activity. When paused an autoscaling
     group does not grow nor srink.
@@ -158,6 +165,7 @@ def as_pause(group):
 
     return _x
 
+
 def as_resume(group):
     """Resume autoscaling group activity.
 
@@ -171,6 +179,7 @@ def as_resume(group):
     mico.output.info("resume autoscaling group %s" % group.name)
 
     return _x
+
 
 def as_resize(group, size):
     """Change autoscaling group desired capacity to size.
@@ -190,6 +199,7 @@ def as_resize(group, size):
 
     return _x
 
+
 def as_policy(name, adjustment_type='ChangeInCapacity',
         scaling_adjustment=2, cooldown=60, *args, **kwargs):
     """
@@ -199,13 +209,15 @@ def as_policy(name, adjustment_type='ChangeInCapacity',
     :param name: Name of scaling policy.
 
     :type adjustment_type: str
-    :param adjustment_type: Specifies the type of adjustment. Valid values are `ChangeInCapacity`, `ExactCapacity` and `PercentChangeInCapacity`.
+    :param adjustment_type: Specifies the type of adjustment.
+             Valid values are `ChangeInCapacity`, `ExactCapacity` and `PercentChangeInCapacity`.
 
     :type scaling_adjustment: int
     :param scaling_adjustment: Value of adjustment (type specified in `adjustment_type`).
 
     :type cooldown: int
-    :param cooldown: Time (in seconds) before Alarm related Scaling Activities can start after the previous Scaling Activity ends.
+    :param cooldown: Time (in seconds) before Alarm
+                    related Scaling Activities can start after the previous Scaling Activity ends.
     """
 
     name = "%s-%s" % (name, _as_get_timestamp())
@@ -218,22 +230,23 @@ def as_policy(name, adjustment_type='ChangeInCapacity',
     _x.update(kwargs)
     return _x
 
+
 def as_exists(name):
     """Return a list of autoscale groups which match with specific name."""
     connection = as_connect()
-    return connection.get_all_groups(names = [name])
+    return connection.get_all_groups(names=[name])
+
 
 def as_ensure(
         name,
         zones,
         instance,
-        balancers = [],
-        events = [],
-        min_size = 2,
-        max_size = 20,
-        desired_size = None,
-        force = False
-):
+        balancers=[],
+        events=[],
+        min_size=2,
+        max_size=20,
+        desired_size=None,
+        force=False):
     """Create a new autoscale group.
 
     :type name: str
@@ -275,19 +288,17 @@ def as_ensure(
         else:
             _l.append(elb.name)
 
-    ag = AutoScalingGroup(
-            name = ag_name,
-            availability_zones = zones,
-            launch_config = instance,
-            load_balancers = _l,
-            min_size = min_size,
-            max_size = max_size,
-            desired_capacity = desired_size
-    )
+    ag = AutoScalingGroup(name=ag_name,
+                          availability_zones=zones,
+                          launch_config=instance,
+                          load_balancers=_l,
+                          min_size=min_size,
+                          max_size=max_size,
+                          desired_capacity=desired_size)
     connection.create_auto_scaling_group(ag)
     mico.output.info("created new autoscaling group: %s" % ag_name)
 
-    as_tag = Tag(key='Name', value = "%s" % name, propagate_at_launch=True, resource_id=ag_name)
+    as_tag = Tag(key='Name', value="%s" % name, propagate_at_launch=True, resource_id=ag_name)
 
     # Add the tag to the autoscale group
     connection.create_or_update_tags([as_tag])
@@ -295,7 +306,7 @@ def as_ensure(
     cw_connection = cw_connect()
     for condition, actions in events:
         if not isinstance(actions, list):
-            actions = [ actions ]
+            actions = [actions]
 
         condition.dimensions = {"AutoScalingGroupName": ag_name}
 
@@ -310,7 +321,7 @@ def as_ensure(
             mico.output.info("create policy %s" % policy.name)
             connection.create_scaling_policy(policy)
 
-            action = connection.get_all_policies(as_group=ag_name,policy_names=[action["name"]])[0]
+            action = connection.get_all_policies(as_group=ag_name, policy_names=[action["name"]])[0]
             condition.name = "%s-%s" % (condition.name, _as_get_timestamp())
             condition.add_alarm_action(action.policy_arn)
             mico.output.debug("add new alarm for condition %s: %s" % (condition.name, action.name))
@@ -318,6 +329,7 @@ def as_ensure(
         cw_connection.create_alarm(condition)
         mico.output.info("create alarm %s" % condition.name)
     return ag
+
 
 def as_alarm(name, alarm_actions=[], *args, **kwargs):
     """Ensures that an specific alarm for autoscale group
@@ -366,6 +378,7 @@ def as_alarm(name, alarm_actions=[], *args, **kwargs):
     """
     return _cw_define(name, alarm_actions, *args, **kwargs)
 
+
 def as_event(condition, action):
     """Create a new definition of an event which produces an action.
 
@@ -377,6 +390,7 @@ def as_event(condition, action):
     """
 
     return (condition, action)
+
 
 def as_delete(name, force=False):
     """Remove a autoscale group.
@@ -404,9 +418,10 @@ def as_delete_policy(name, autoscale_group=None):
     :param autoscale_group: the name of the autoscale group.
     """
     conn = as_connect()
-    _x = conn.delete_policy(name, autoscale)
+    _x = conn.delete_policy(name, autoscale_group)
     mico.output.info("Delete autoscaling policy: %s" % name)
     return _x
+
 
 def as_delete_config(name):
     """Remove an autoscaling config
@@ -418,6 +433,7 @@ def as_delete_config(name):
     _x = conn.delete_launch_configuration(name)
     mico.output.info("Delete autoscaling config: %s" % name)
     return _x
+
 
 def as_activity(name, max_records=None):
     """Get the scaling activity for an autoscale group
@@ -438,6 +454,7 @@ def as_activity(name, max_records=None):
     conn = as_connect()
     return map(_set_activity_name, conn.get_all_activities(name, max_records))
 
+
 def as_list(*args):
     """List autoscaling groups filtering by autoscale name, provided as
     argument. Glob expressiosn are allowed in filters as multiple filtes
@@ -456,6 +473,7 @@ def as_list(*args):
                 group.total_instances = len(group.instances)
                 yield group
 
+
 def as_list_policies(*args):
     """List autoscaling policies filtering by name providing as argument.
     Glob expression are allowed in filters as multiple filters too, for
@@ -471,6 +489,7 @@ def as_list_policies(*args):
             if fnmatch(policy.name, arg):
                 yield policy
 
+
 def as_list_alarms(*args):
     """List autoscaling alarms filtering by name providing as argument.
     Glob expression are allowed in filters as multiple filters too, for
@@ -479,7 +498,6 @@ def as_list_alarms(*args):
         as_list_alarms('apaches-*')
     """
     args = args or ('*',)
-    conn = as_connect()
 
     for arg in args:
         for policy in as_list_policies('*'):
@@ -488,6 +506,7 @@ def as_list_alarms(*args):
                     cw_alarm = cw_exists(alarm.name)[0]
                     cw_alarm.name = alarm.name
                     yield cw_alarm
+
 
 def as_list_instances(*args):
     """List autoscaling instances which are vinculated with specified
@@ -498,7 +517,7 @@ def as_list_instances(*args):
     for ag in as_list(*args):
         for instance in ag.instances:
             res = ec2_connect().get_all_instances([instance.instance_id])
-            for insobj in  [i for r in res for i in r.instances]:
+            for insobj in [i for r in res for i in r.instances]:
                 insobj.autoscaling_group = ag.name
                 insobj.launch_config_name = instance.launch_config_name
                 if "Name" in insobj.tags:

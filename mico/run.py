@@ -11,6 +11,9 @@ import fabric.api
 from fabric.tasks import execute as fabric_execute
 
 import mico.hook
+import mico.run
+from mico import env
+
 
 from mico.lib.core.sudo import is_sudo
 from mico.lib.core.local import is_local, run_local
@@ -33,9 +36,9 @@ def execute(action, output, *args, **kwargs):
             return action(*args, **kwargs)
 
     return fabric_execute(
-             mico.hook.task_add_pre_run_hook( mico.hook.run_pre_hook )
-                ( mico.hook.task_add_post_run_hook( mico.hook.run_post_hook )
-                    ( run )), *args, **kwargs )
+             mico.hook.task_add_pre_run_hook(mico.hook.run_pre_hook)
+                (mico.hook.task_add_post_run_hook(mico.hook.run_post_hook)
+                    (run)), *args, **kwargs)
 
 
 def run(*args, **kwargs):

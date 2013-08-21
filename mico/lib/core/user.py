@@ -11,17 +11,22 @@ import base64
 import mico.output
 from mico.lib.core.group import group_exists
 
+from __builtin__ import run, group_check
+from Runtime import ExecutionError
+
+
 def user_password(name, password, encrypted_password=False):
     """Sets the given user password.
     """
     encoded_password = base64.b64encode("%s:%s" % (name, password))
     if encrypted_password:
-        _x = run("usermod -p '%s' '%s'" % (password,name))[0]
+        _x = run("usermod -p '%s' '%s'" % (password, name))[0]
     else:
         _x = run("echo '%s' | openssl base64 -A -d | chpasswd" % (encoded_password))[0]
 
     mico.output.info("set password for user %s" % name)
     return _x
+
 
 def user_create(name, password=None, home=None, uid=None, gid=None, shell=None,
                 uid_min=None, uid_max=None, encrypted_password=False,
@@ -49,9 +54,10 @@ def user_create(name, password=None, home=None, uid=None, gid=None, shell=None,
         options.append("--gecos='%s'" % (fullname))
     _x = run("useradd %s '%s'" % (" ".join(options), name))[0]
     if password:
-        return user_password(name=name,password=password,encrypted_password=encrypted_password)
+        return user_password(name=name, password=password, encrypted_password=encrypted_password)
     else:
         return  _x
+
 
 def user_exists(name=None, uid=None):
     """Checks if there is a user defined with the given name.
@@ -68,7 +74,7 @@ def user_exists(name=None, uid=None):
     if name is not None and uid is not None:
         raise ExecutionError("user_exists require name or uid, but not both")
 
-    if name != None:
+    if name is not None:
         d = run("cat /etc/passwd | egrep '^%s:'" % (name), force=True)[0]
     else:
         d = run("cat /etc/passwd | egrep '^.*:.*:%s:'" % (uid), force=True)[0]
@@ -83,7 +89,8 @@ def user_exists(name=None, uid=None):
         if len(d) < 7:
             raise ExecutionError("malformed /etc/password, 7 fields expected")
         else:
-            return dict(zip(("name", "password", "uid", "gid", "gecos", "home", "shell"),d))
+            return dict(zip(("name", "password", "uid", "gid", "gecos", "home", "shell"), d))
+
 
 def user_ensure(name, password=None, home=None, uid=None, gid=None,
         shell=None, fullname=None, encrypted_password=False):
@@ -91,7 +98,8 @@ def user_ensure(name, password=None, home=None, uid=None, gid=None,
     """
 
     if not user_exists(name):
-        return user_create(name, password, home, uid, gid, shell, fullname,encrypted_password)
+        return user_create(name, password, home, uid, gid, shell, fullname, encrypted_password)
+
 
 def user_remove(name, rm_home=False):
     """Removes the user with the given name, optionally

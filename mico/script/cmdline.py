@@ -2,7 +2,6 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
-import os
 import sys
 import cmd
 import shlex
@@ -17,21 +16,26 @@ import mico.output
 
 from mico.stack import Stack
 
+from mico import execute
+
+from __builtin__ import env, split
+
 
 class MicoCmdline(cmd.Cmd):
     """The command line console which will be invoked from mico script."""
 
-    ruler     = '-'
-    prompt    = mico.output.prompt_usr
-    intro     = mico.output.prompt_msg + random.choice(mico.output.intros)
+    ruler = '-'
+    prompt = mico.output.prompt_usr
+    intro = mico.output.prompt_msg + random.choice(mico.output.intros)
 
     def complete(self, text, state):
         "Return a list of completion options for console."
 
         _stack_path = mico.path.get_stack_path()
 
-        options =  [i for i in map(lambda x:x[3:], filter(lambda x:x.startswith("do_"), dir(self) )) if i.startswith(text) if i != "EOF" ]
-        options += [i for j in map(pkgutil.iter_modules, _stack_path) for _,i,_ in j]
+        options = [i for i in map(lambda x: x[3:],
+            filter(lambda x: x.startswith("do_"), dir(self))) if i.startswith(text) if i != "EOF"]
+        options += [i for j in map(pkgutil.iter_modules, _stack_path) for _, i, _ in j]
 
         if state < len(options):
             return options[state]
@@ -42,10 +46,10 @@ class MicoCmdline(cmd.Cmd):
         pass
 
     def do_set(self, args):
-        "Set an environment variable, in teh form variable=value"
+        """Set an environment variable, in teh form variable=value"""
         if "=" in args:
             args = args.split("=")
-            val  = " ".join(args[1:])
+            val = " ".join(args[1:])
 
             if val == "True" or val == "true":
                 val = True
@@ -55,22 +59,20 @@ class MicoCmdline(cmd.Cmd):
                 val = "'%s'" % val
 
             try:
-                eval("env.__setitem__('%s',%s)" % ( args[0], val ))
+                eval("env.__setitem__('%s',%s)" % (args[0], val))
             except Exception, e:
                 mico.output.error("invalid evaluation: %s" % e)
         else:
             mico.output.error("invalid syntax, required var=value")
 
-
     def do_host(self, host=[]):
-        "Set hosts where command must run."
+        """Set hosts where command must run."""
 
         if host:
             if "," in host:
                 host = host.split(",")
             else:
-                host = [ host ]
-
+                host = [host]
             env.hosts = host
 
     def do_env(self, args):
@@ -79,12 +81,11 @@ class MicoCmdline(cmd.Cmd):
             if " " in args:
                 args = split(" ")
             else:
-                args = [ args ]
+                args = [args]
 
         for key in env:
             if not args or key in args:
-                mico.output.puts("%-20s = %s" % ( key, env[key] ) )
-
+                mico.output.puts("%-20s = %s" % (key, env[key]))
 
     def do_EOF(self, *args):
         "Exits the shell, also works by pressing C-D."
@@ -111,10 +112,10 @@ class MicoCmdline(cmd.Cmd):
         names = self.get_names()
         cmds_doc = []
         cmds_undoc = []
-        help = {}
+        cmd_help = {}
         for name in names:
             if name[:5] == 'help_':
-                help[name[5:]]=1
+                cmd_help[name[5:]] = 1
         names.sort()
         # There can be duplicates if routines overridden
         prevname = ''
@@ -123,15 +124,14 @@ class MicoCmdline(cmd.Cmd):
                 if name == prevname:
                     continue
                 prevname = name
-                cmd=name[3:]
+                cmd = name[3:]
                 if cmd in help:
                     cmds_doc.append(cmd)
-                    del help[cmd]
+                    del cmd_help[cmd]
                 elif getattr(self, name).__doc__:
                     cmds_doc.append(cmd)
                 else:
                     cmds_undoc.append(cmd)
-
 
         if len(cmds_doc):
             if arg and arg in cmds_doc:
@@ -140,13 +140,13 @@ class MicoCmdline(cmd.Cmd):
                     func = getattr(self, 'help_' + arg)
                 except AttributeError:
                     try:
-                        doc=getattr(self, 'do_' + arg).__doc__
+                        doc = getattr(self, 'do_' + arg).__doc__
                         if doc:
-                            self.stdout.write("%s\n"%str(doc))
+                            self.stdout.write("%s\n" % str(doc))
                             return
                     except AttributeError:
                         pass
-                    self.stdout.write("%s\n"%str(self.nohelp % (arg,)))
+                    self.stdout.write("%s\n" % str(self.nohelp % (arg,)))
                     return
                 return func()
             else:
@@ -165,25 +165,24 @@ class MicoCmdline(cmd.Cmd):
                     for pkgname, module in _load_all_modules_from_dir(path):
                         if not arg or arg == pkgname:
                             print "[33;1m%s[0;0m" % pkgname
-                            if hasattr(module,"__doc__") and module.__doc__:
+                            if hasattr(module, "__doc__") and module.__doc__:
                                 print "%s" % module.__doc__
                             print
 
                             for o in inspect.getmembers(module):
                                 if inspect.isfunction(o[1]):
                                     if (module == inspect.getmodule(o[1])):
-                                        if getattr(o[1],"__doc__"):
-                                            print "[0;1m%s.%s[0;0m"% (pkgname, o[0],)
+                                        if getattr(o[1], "__doc__"):
+                                            print "[0;1m%s.%s[0;0m" % (pkgname, o[0],)
                                             print "    %s" % (o[1].__doc__)
                                             print
                 except OSError:
                     pass
 
-
     def default(self, args):
         lexer = shlex.shlex(args)
         lexer.wordchars += "?*:/%&.-="
-        lexer = tuple([ x for x in lexer ])
+        lexer = tuple([x for x in lexer])
 
         if ":" in lexer[0]:
             mod, fun = lexer[0].split(":", 2)
@@ -194,11 +193,12 @@ class MicoCmdline(cmd.Cmd):
         try:
             mod, fun = Stack.load(mod, [fun])
         except ImportError, e:
-            mico.output.error("stack '%s' not found: %s." % (mod,e,))
+            mico.output.error("stack '%s' not found: %s." % (mod, e, ))
         except AttributeError, e:
-            mico.output.error("entry point '%s' not found in stack '%s': %s" % ( fun, mod, e, ))
+            mico.output.error("entry point '%s' not found in stack '%s': %s" % (fun, mod, e, ))
         else:
             execute(fun, False, *tuple(lexer[1:]))
+
 
 def main():
     """Entrypoint for mico cmdline client."""
@@ -289,5 +289,5 @@ def main():
     except Exception, e:
         if "debug" in env.loglevel:
             raise
-        mico.output.error("unexpected error: %s: %s" % (e.__class__.__name__ ,e))
+        mico.output.error("unexpected error: %s: %s" % (e.__class__.__name__, e))
 

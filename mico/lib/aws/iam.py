@@ -12,8 +12,10 @@ from boto.iam.connection import IAMConnection
 
 import mico.output
 
+
 class IAMLibraryError(Exception):
     """Models an IAM library error."""
+
 
 def iam_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services IAM, using identify provided
@@ -36,6 +38,7 @@ def iam_connect(region=None, *args, **kwargs):
 
     return connection
 
+
 def iam_cert_exists(filter_expr='*'):
     """Returns the list of server certificates which match with specified
     filter expression passed as argument or None if none match.
@@ -44,11 +47,12 @@ def iam_cert_exists(filter_expr='*'):
 
     # Ohh Holy shit!!!
     meta = conn.get_all_server_certs()['list_server_certificates_response']['list_server_certificates_result']['server_certificate_metadata_list']
-    _x = filter(lambda x:fnmatch(x["server_certificate_name"], filter_expr), meta)
+    _x = filter(lambda x: fnmatch(x["server_certificate_name"], filter_expr), meta)
     if _x:
         return _x[0]
     else:
         return _x
+
 
 def iam_cert_ensure(name, public, private, chain=None, path=None):
     """Ensure that the certificate which name is passed as argument exists,

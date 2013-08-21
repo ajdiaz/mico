@@ -18,7 +18,7 @@ def ls(*args):
         mico ec2.ebs ls apaches-* test-*
     """
     for x in ebs_list(*args):
-        mico.output.dump(x, layout=env.get("layout","vertical"))
+        mico.output.dump(x, layout=env.get("layout", "vertical"))
 
 
 def rm(*args):
@@ -32,7 +32,7 @@ def rm(*args):
     """
     for x in args:
         try:
-            if env.get("force",False):
+            if env.get("force", False):
                 try:
                     ebs_detach(x, env.get("detach_force", None))
                 except boto.exception.EC2ResponseError as e:
@@ -55,7 +55,7 @@ def detach(*args):
 
 def main(*args):
     if len(args) > 0:
-        fn = getattr(sys.modules[__name__],args[0])
+        fn = getattr(sys.modules[__name__], args[0])
         return fn(*args[1:])
     else:
         return ls()
