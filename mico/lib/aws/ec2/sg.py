@@ -6,16 +6,15 @@
 groups.
 """
 
-import socket
-
 from boto.exception import EC2ResponseError
 from boto.ec2.elb.securitygroup import SecurityGroup
 from boto.ec2.securitygroup import SecurityGroup as SG_Instance
 
 import mico.output
-from mico.util.dicts import AttrDict
-from mico.lib.aws.ec2 import ec2_connect, ec2_list
+from mico.lib.aws.ec2 import ec2_connect
+from mico.lib.aws.ec2 import ec2_list
 from mico.lib.aws.ec2 import EC2LibraryError
+
 
 def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_port=None):
     """Return a representation of a specific security rule.
@@ -23,24 +22,24 @@ def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_p
 
     cidr_ip = None
     src_group_name = None
-    ret = { "ip_protocol": protocol }
+    ret = {"ip_protocol": protocol}
 
     if port is not None:
         if isinstance(port, int):
             ret["from_port"] = port
-            ret["to_port"]   = port
+            ret["to_port"] = port
         elif isinstance(port, str):
             if "-" in port:
                 port_ini, port_end = port.split("-")
                 ret["from_port"] = int(port_ini)
-                ret["to_port"]   = int(port_end)
+                ret["to_port"] = int(port_end)
             else:
                 ret["from_port"] = int(port)
-                ret["to_port"]   = int(port)
+                ret["to_port"] = int(port)
     else:
         if protocol != "icmp":
             ret["from_port"] = from_port or 0
-            ret["to_port"]   = to_port or 65535
+            ret["to_port"] = to_port or 65535
 
     def _add_source(src, d):
         r = {}
@@ -65,11 +64,11 @@ def sg_rule(protocol="tcp", source="0.0.0.0/32", port=None, from_port=None, to_p
             raise ValueError("Unknow type for sg source")
         return r
 
-
     if isinstance(source, list):
-        return [ _add_source(x, ret) for x in source ]
+        return [_add_source(x, ret) for x in source]
     else:
-        return [ _add_source(source, ret)]
+        return [_add_source(source, ret)]
+
 
 def sg_ensure(name, description, vpc_id=None, rules=[], force=False):
     """Create a new EC2 security group according with parameters passed
@@ -105,18 +104,19 @@ def sg_ensure(name, description, vpc_id=None, rules=[], force=False):
                 _obj.authorize(**r)
                 mico.output.info("add rule to security group %s: %s" % (
                     _obj.name,
-                    ",".join(map(lambda x:"%s=%s" % x, r.items()))
+                    ",".join(map(lambda x: "%s=%s" % x, r.items()))
                 ))
             except EC2ResponseError as e:
                 if e.error_code == "InvalidPermission.Duplicate":
                     mico.output.debug("skip add already exists rule to security group %s: %s" % (
                         _obj.name,
-                        ", ".join(map(lambda x:"%s=%s" % x, r.items()))
+                        ", ".join(map(lambda x: "%s=%s" % x, r.items()))
                     ))
             except Exception as e:
                 raise e
 
     return _obj
+
 
 def sg_exists(name):
     """Return the security group with name passed as argument for specified
@@ -132,17 +132,20 @@ def sg_exists(name):
     else:
         return None
 
+
 def _sg_revoke_all_rules(name, target):
     for rule in name.rules:
         dr = rule.__dict__
         if target.id in [g.group_id for g in dr["grants"]]:
-            mico.output.debug("Removed from %s the rule %s %s-%s that references %s" % (name.name, dr["ip_protocol"], dr["from_port"], dr["to_port"], target.name, ))
+            mico.output.debug("Removed from %s the rule %s %s-%s that references %s" %
+               (name.name, dr["ip_protocol"], dr["from_port"], dr["to_port"], target.name, ))
             name.revoke(
-                ip_protocol = dr["ip_protocol"],
-                from_port = dr["from_port"],
-                to_port = dr["to_port"],
-                src_group = target
+                ip_protocol=dr["ip_protocol"],
+                from_port=dr["from_port"],
+                to_port=dr["to_port"],
+                src_group=target
             )
+
 
 def sg_delete(name, force=False):
     """Deletes a security group.
@@ -164,7 +167,8 @@ def sg_delete(name, force=False):
         if force:
             instances = [x for x in ec2_list('sec:%s' % (target.name, ))]
             if instances:
-                raise EC2LibraryError('%s is in use by %s.' % (target.name, ",".join(map(lambda x:x.name, instances)),))
+                raise EC2LibraryError('%s is in use by %s.' %
+                        (target.name, ",".join(map(lambda x: x.name, instances)),))
             _sg = connection.get_all_security_groups()
             for sg in filter(lambda x: x.name != target.name, _sg):
                 _sg_revoke_all_rules(sg, target)

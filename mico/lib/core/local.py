@@ -7,10 +7,12 @@ machine."""
 
 import __builtin__
 
-from hashlib import sha1
+import os
+
 from jinja2 import Environment, FileSystemLoader
 
 import mico
+
 
 def local_content(src, var={}):
     """Read a file content (which is a jinja2 template), parser it using
@@ -27,7 +29,7 @@ def local_content(src, var={}):
     jinja_env = Environment(loader=FileSystemLoader([os.path.dirname(src)]))
     jinja_tpl = jinja_env.get_template(os.path.basename(src))
 
-    local_env = dict([ (k,v) for (k,v) in __builtin__.env.items() ])
+    local_env = dict([(k, v) for (k, v) in __builtin__.env.items()])
     local_env.update(var)
 
     content = jinja_tpl.render(**local_env)
@@ -52,6 +54,8 @@ import subprocess
 from fabric import operations
 from StringIO import StringIO
 
+from mico import env
+
 
 def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
     """Local implementation of fabric.api.run() using subprocess.
@@ -68,8 +72,8 @@ def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
 
     mico.output.debug(command)
 
-    stderr   = subprocess.STDOUT if combine_stderr else subprocess.PIPE
-    process  = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE, stderr=stderr)
+    stderr = subprocess.STDOUT if combine_stderr else subprocess.PIPE
+    process = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE, stderr=stderr)
     out, err = process.communicate()
 
     # FIXME: Should stream the output, and only print it if fabric's properties allow it
@@ -77,9 +81,9 @@ def run_local(command, sudo=False, shell=True, pty=True, combine_stderr=None):
     # Wrap stdout string and add extra status attributes
     result = operations._AttributeString(out.rstrip('\n'))
     result.return_code = process.returncode
-    result.succeeded   = process.returncode == 0
-    result.failed      = not result.succeeded
-    result.stderr      = StringIO(err)
+    result.succeeded = (process.returncode == 0)
+    result.failed = not result.succeeded
+    result.stderr = StringIO(err)
     return result
 
 

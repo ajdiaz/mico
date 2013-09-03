@@ -6,12 +6,10 @@
 """
 
 import sys
-import fnmatch
 import mico.output
 from mico.lib.aws.ec2 import *
 
-
-__all__ = [ "alarms", "policies" ]
+__all__ = ["alarms", "policies"]
 
 
 def ls(*args):
@@ -87,27 +85,28 @@ def resume(*args):
 
 
 def resize(size, *args):
-   """Resize autoscaling group to a specified size.
-   When issuing rezie you change AutoScaling Group desired capacity.
-   It ignores cooldown time.
+    """Resize autoscaling group to a specified size.
+    When issuing rezie you change AutoScaling Group desired capacity.
+    It ignores cooldown time.
 
-   :param size: Desired capacity
+    :param size: Desired capacity
 
-   For example::
-        mico ec2.as resize 10 'apache-*'
-   """
-   size = int(size)
+    For example::
+         mico ec2.as resize 10 'apache-*'
+    """
+    size = int(size)
 
-   for group in as_list(*args):
+    for group in as_list(*args):
         if group.min_size <= size:
             as_resize(group, size)
         else:
-            mico.output.error("(%s) desired size %d must be higher than min size %d" %(group.name, size, group.min_size))
+            mico.output.error("(%s) desired size %d must be higher than min size %d" %
+                              (group.name, size, group.min_size))
 
 
 def main(*args):
     if len(args) > 0:
-        fn = getattr(sys.modules[__name__],args[0])
+        fn = getattr(sys.modules[__name__], args[0])
         return fn(*args[1:])
     else:
         return ls()

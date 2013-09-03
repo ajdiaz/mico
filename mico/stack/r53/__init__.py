@@ -16,12 +16,13 @@ def ls(*args):
         mico ec2 ls apaches-* test-*
     """
     for x in r53_list(*args):
-        mico.output.dump(x, layout=env.get("layout","vertical"))
+        mico.output.dump(x, layout=env.get("layout", "vertical"))
+
 
 
 def main(*args):
     if len(args) > 0:
-        fn = getattr(sys.modules[__name__],args[0])
+        fn = getattr(sys.modules[__name__], args[0])
         return fn(*args[1:])
     else:
         return ls()

@@ -9,8 +9,10 @@ from os import environ as os_environ
 from fnmatch import fnmatch
 from boto.route53.connection import Route53Connection
 
+
 class R53LibraryError(Exception):
     """Models a R53 library error."""
+
 
 def r53_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services Route53, using identify provided
@@ -33,21 +35,24 @@ def r53_connect(region=None, *args, **kwargs):
 
     return connection
 
+
 def r53_zones(name=None):
     conn = r53_connect()
 
     if name is None:
         return conn.get_zones()
     else:
-        return [ conn.get_zone(name) ]
+        return [conn.get_zone(name)]
+
 
 def r53_records(zone, name=None):
-    conn = r53_connect()
+    #  conn = r53_connect()
 
     if name is None:
         return zone.get_records()
     else:
-        return [ zone.get_record(name) ]
+        return [zone.get_record(name)]
+
 
 def r53_list(*args):
     """Get all records in R53.

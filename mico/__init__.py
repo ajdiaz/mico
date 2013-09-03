@@ -33,4 +33,3 @@ __builtin__.execute = mico.run.execute
 # XXX: Evaluate if storage has sense in environ
 #__builtin__.env.storage = FileStorage(mico.path.get_cache_path())
 
-

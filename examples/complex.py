@@ -12,6 +12,7 @@ apt_update: true
 apt_upgrade: true
 """
 
+
 def main(*args):
     "Deploy the entire nosy production environment"
 
@@ -31,49 +32,52 @@ def main(*args):
         start_services(arg)
 
 
-
-
 def create_security(args):
     "Create security groups required for the environment."
 
     sg_frontend = sg_ensure(
-            name        = "frontend",
-            description = 'frontend security group',
-            rules = [
+            name="frontend",
+            description='frontend security group',
+            rules=[
                 sg_rule(
-                    protocol = "tcp",
-                    source   = "0.0.0.0/0",
-                    port     = "22"
+                    protocol="tcp",
+                    source="0.0.0.0/0",
+                    port="22"
                 ),
                 sg_rule(
-                    protocol = "tcp",
-                    source = "0.0.0.0/0",
-                    port = "80"
+                    protocol="tcp",
+                    source="0.0.0.0/0",
+                    port="80"
                 )
             ]
     )
+
+    return sg_frontend
 
 
 def create_instance(arg):
     "Create EBS instance for nosy."
 
     instance = ec2_ensure(
-            ami = "ami-10314d79",
-            name = arg,
-            instance_type = "t1.micro",
-            user_data = USERDATA % ( arg, "%s.example.com" % arg,) ,
-            key_name = "root-us-east-virginia",
-            security_groups = [ "frontend" ],
-            placement = "us-east-1a"
+            ami="ami-10314d79",
+            name=arg,
+            instance_type="t1.micro",
+            user_data=USERDATA % (arg, "%s.example.com" % arg, ),
+            key_name="root-us-east-virginia",
+            security_groups=["frontend"],
+            placement="us-east-1a"
     )
 
-    xvdf = ebs_ensure(
-        size        = 8,
-        zone        = "us-east-1a",
-        volume_type = "standard",
-        instance    = instance,
-        device      = "/dev/sdf",
-    )
+# UNUSED
+#    xvdf=ebs_ensure(
+#        size=8,
+#        zone="us-east-1a",
+#        volume_type="standard",
+#        instance=instance,
+#        device="/dev/sdf",
+#    )
+
+    return instance
 
 
 def install_nginx(arg):
@@ -82,7 +86,6 @@ def install_nginx(arg):
     with mode_sudo():
         package_ensure("nginx-full")
         service_ensure_boot("nginx")
-
 
 
 def install_uwsgi(args):
@@ -108,8 +111,9 @@ def create_users(args):
 
     with mode_sudo():
         user_ensure("ajdiaz")
-        group_user_add("sudo","ajdiaz")
-        ssh_authorize("ajdiaz","ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDX0Ila4UIQkgYRCTeHGzXkZbqYEpwwDlUDDM3oM4j2/hkrd9AY5p/ug921TpN4qi5pooSRwcD5ZiWZNqzPfEefl4A+3pGVfObN3NNUbc0Iry/T6MRdmnWB3LQxc2R45UOhVjLTuCKWRNLyZ1A7sIp7yrBt36BHoSoL40AIBbdEp37oSgubCI953UGNIN70BGAF/Cm0SW5f47NqDM2N2Fz/LA6Zf3NYXqYRzkOkpHxJ10DUvaAXoLiFVQPEGVdgwQJpIUdGZYkhPbgs5yBhBU5y2BLABJb/b1Yt3Yl6qSuBNOPP4oIMYjkUWXHu81hYJe68GpBwWN1AwGv3g7LeFOcx near.to")
+        group_user_add("sudo", "ajdiaz")
+        ssh_authorize("ajdiaz",
+            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDX0Ila4UIQkgYRCTeHGzXkZbqYEpwwDlUDDM3oM4j2/hkrd9AY5p/ug921TpN4qi5pooSRwcD5ZiWZNqzPfEefl4A+3pGVfObN3NNUbc0Iry/T6MRdmnWB3LQxc2R45UOhVjLTuCKWRNLyZ1A7sIp7yrBt36BHoSoL40AIBbdEp37oSgubCI953UGNIN70BGAF/Cm0SW5f47NqDM2N2Fz/LA6Zf3NYXqYRzkOkpHxJ10DUvaAXoLiFVQPEGVdgwQJpIUdGZYkhPbgs5yBhBU5y2BLABJb/b1Yt3Yl6qSuBNOPP4oIMYjkUWXHu81hYJe68GpBwWN1AwGv3g7LeFOcx near.to")
 
 
 def configure_sudoers(args):
@@ -123,7 +127,7 @@ def configure_sudoers(args):
 
 def install_global_pip_packages(args):
     "Install pip packages for host."
-    PIP_PACKAGES = [ "redis", "bottle" ]
+    PIP_PACKAGES = ["redis", "bottle"]
 
     for package in PIP_PACKAGES:
         sudo("pip install --upgrade %s" % package)

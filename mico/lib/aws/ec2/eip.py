@@ -10,6 +10,7 @@ import mico.output
 from mico.lib.aws.ec2 import ec2_tag
 from mico.lib.aws.ec2 import ec2_connect
 
+
 def eip_allocate(instance=None, force=False):
     """Allocate a new Elastic IP Address.
 
@@ -22,15 +23,15 @@ def eip_allocate(instance=None, force=False):
     """
     if instance is not None:
         if "public_ip" in instance.tags:
-            ec2_connect().associate_address(instance, instace.tags["public_ip"])
+            ec2_connect().associate_address(instance, instance.tags["public_ip"])
             mico.output.info("using existent EIP %s for %s" % (
-                instace.tags["public_ip"],
+                instance.tags["public_ip"],
                 instance)
             )
             return instance.tags["public_ip"]
         else:
             address = ec2_connect().allocate_address().public_ip
-            ec2_tag(instance, public_ip = address)
+            ec2_tag(instance, public_ip=address)
             ec2_connect().associate_address(instance.id, address)
             mico.output.info("created new EIP %s for %s" % (
                 address,
@@ -71,7 +72,7 @@ def eip_release(public_ip=None, allocation_ip=None):
     :return: True if successful
     """
     connection = ec2_connect()
-    _x = connection.release_address(public_ip, allocation_id)
+    _x = connection.release_address(public_ip, allocation_ip)
     mico.output.info("released EIP: %s" % public_ip)
     return _x
 

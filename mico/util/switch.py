@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
 
+from __builtin__ import env
+
 """This module provide a switcher, which when is accesses toggle an internal
 status.
 """
@@ -12,9 +14,9 @@ class Switcher(object):
     """
     _switch = (None, None)
 
-    def __init__(self, init_value = None):
+    def __init__(self, init_value=None):
         self._old_value = env.get(self._switch[0], None)
-        env[self._switch[0]] = self._switch[1]  \
+        env[self._switch[0]] = self._switch[1] \
                                if init_value is None \
                                else init_value
 

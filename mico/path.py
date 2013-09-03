@@ -7,7 +7,6 @@ used in mico, reading environment variables when needed.
 """
 
 import os
-import sys
 
 
 def get_stack_path(env_var="MICO_STACK_PATH", path=[]):
@@ -28,13 +27,13 @@ def get_stack_path(env_var="MICO_STACK_PATH", path=[]):
     """
     _path = [
         os.curdir,
-        os.path.join(os.environ.get("HOME","/"), ".config/mico"),
+        os.path.join(os.environ.get("HOME", "/"), ".config/mico"),
         "/etc/mico",
         os.path.join(os.path.dirname(__file__), "stack"),
     ]
 
     if os.environ.get(env_var, None):
-       _path.insert(0, os.environ.get(env_var))
+        _path.insert(0, os.environ.get(env_var))
 
     if path:
         _path.extend(path)
@@ -44,7 +43,7 @@ def get_stack_path(env_var="MICO_STACK_PATH", path=[]):
 
 def get_cache_path(env_var="MICO_CACHE_PATH"):
     return os.environ.get("MICO_CACHE_PATH", None) or \
-           os.path.join(os.environ.get("HOME","/"), ".cache/mico")
+         os.path.join(os.environ.get("HOME", "/"), ".cache/mico")
 
 
 def get_library_path(env_var="MICO_LIBRARY_PATH", path=[]):
@@ -66,7 +65,7 @@ def get_library_path(env_var="MICO_LIBRARY_PATH", path=[]):
     """
     _path = [
         os.curdir,
-        os.path.join(os.environ.get("HOME","/"), ".local/share/mico"),
+        os.path.join(os.environ.get("HOME", "/"), ".local/share/mico"),
         "/usr/lib/mico",
         "/usr/local/lib/mico",
         "/usr/share/mico",
@@ -74,7 +73,7 @@ def get_library_path(env_var="MICO_LIBRARY_PATH", path=[]):
     ]
 
     if os.environ.get(env_var, None):
-       _path.insert(0, os.environ.get(env_var))
+        _path.insert(0, os.environ.get(env_var))
 
     if path:
         _path.extend(path)

@@ -7,6 +7,10 @@ packages and package repositories into a host using yum utility."""
 
 import hashlib
 
+from __builtin__ import run
+from Runtime import ExecutionError
+
+
 def repository_ensure(repository, key):
     """Ensure that an APT repository exists.
     """
@@ -18,6 +22,7 @@ def repository_ensure(repository, key):
         hashlib.sha1(repository).hexdigest(),
     ))[0]
 
+
 def package_update(package=None):
     """Update the package list or a package list referer a package passed as
     argument using APT tools.
@@ -27,7 +32,10 @@ def package_update(package=None):
     else:
         if type(package) in (list, tuple):
             package = " ".join(package)
-        return run('DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade %s' % (package))[0]
+        return run(
+            'DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef"' +
+            'o Dpkg::Options::="--force-confold" upgrade %s' % (package))[0]
+
 
 def package_upgrade(distupgrade=False):
     """Upgrade the system, or upgrade the distribution.
@@ -36,9 +44,14 @@ def package_upgrade(distupgrade=False):
         default).
     """
     if distupgrade:
-        return run('DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')[0]
+        return run(
+            'DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef"' +
+            '-o Dpkg::Options::="--force-confold" dist-upgrade')[0]
     else:
-        return run('DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade')[0]
+        return run(
+            'DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef"' +
+            '-o Dpkg::Options::="--force-confold" upgrade')[0]
+
 
 def package_install(package, update=False):
     """Install a package using APT tool.
@@ -50,7 +63,8 @@ def package_install(package, update=False):
     :param update: when True, performs an update before (False by default).
     """
     if update:
-        _x = run('DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update')[0]
+        _x = run('DEBIAN_FRONTEND=noninteractive apt-get --yes ' +
+                 '-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update')[0]
         if _x.return_code != 0:
             raise ExecutionError("Unable to update, but required")
 
@@ -58,6 +72,7 @@ def package_install(package, update=False):
         package = " ".join(package)
 
     return run("DEBIAN_FRONTEND=noninteractive apt-get --yes install %s" % (package))[0]
+
 
 def package_ensure(package, update=False):
     """Ensure apt packages are installed.
@@ -78,6 +93,7 @@ def package_ensure(package, update=False):
             return package_update(package)
         return status
 
+
 def package_clean(package=None):
     """Clean APT cache.
 
@@ -87,6 +103,7 @@ def package_clean(package=None):
     if type(package) in (list, tuple):
         package = " ".join(package)
     return run("DEBIAN_FRONTEND=noninteractive apt-get -y --purge remove '%s'" % package)[0]
+
 
 def package_remove(package, autoclean=False):
     """Remove APT package.
@@ -98,7 +115,9 @@ def package_remove(package, autoclean=False):
     :param autoclean: If set (False by default) execute autoclean afte
         remove.
     """
-    _x = run('DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" remove "%s"' % package)[0]
+    _x = run('DEBIAN_FRONTEND=noninteractive apt-get --yes' +
+             ' -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" remove "%s"' %
+              package)[0]
     if _x.return_code == 0:
         if autoclean:
             return run('apt-get --yes autoclean')[0]

@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 # -*- encoding: utf-8 -*-
 # vim:fenc=utf-8:
@@ -12,7 +13,7 @@ import mico.output
 from mico.lib.aws.ec2 import *
 
 
-__all__ = [ "as", "ebs", "sg" ]
+__all__ = ["as", "ebs", "sg"]
 
 
 def ls(*args):
@@ -23,7 +24,7 @@ def ls(*args):
         mico ec2 ls apaches-* test-*
     """
     for x in ec2_list(*args):
-        mico.output.dump(x, layout=env.get("layout","vertical"))
+        mico.output.dump(x, layout=env.get("layout", "vertical"))
 
 
 def reboot(*args):
@@ -66,7 +67,7 @@ def terminate(*args):
     """
     for x in ec2_list(*args):
         try:
-            if env.get("force",False):
+            if env.get("force", False):
                 x.modify_attribute("disableApiTermination", False)
                 mico.output.debug("Disabling termination protection for instance %s (%s)" % (x.name, x.id,))
             x.terminate()
@@ -82,8 +83,8 @@ def run(*args):
 
         mico ec2 run 'apaches-*' service apache reload
     """
-    env.host_label = { x.ip_address:x.name for x in ec2_list(args[0]) if x.ip_address is not None }
-    env.roledefs['mico'] = [ x for x in env.host_label ]
+    env.host_label = {x.ip_address: x.name for x in ec2_list(args[0]) if x.ip_address is not None}
+    env.roledefs['mico'] = [x for x in env.host_label]
 
     env.roles.append('mico')
 
@@ -93,7 +94,7 @@ def run(*args):
 
 def main(*args):
     if len(args) > 0:
-        fn = getattr(sys.modules[__name__],args[0])
+        fn = getattr(sys.modules[__name__], args[0])
         return fn(*args[1:])
     else:
         return ls()

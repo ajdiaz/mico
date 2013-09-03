@@ -39,12 +39,13 @@ def async(func):
 
         t1.join()
         t2.join()
-	"""
+        """
+    from mico import env
 
     @wraps(func)
     def _inner(*args, **kwargs):
         if env.parallel:
-            func_th = Thread(target = func, args = args, kwargs = kwargs)
+            func_th = Thread(target=func, args=args, kwargs=kwargs)
             func_th.start()
             return func_th
         else:
@@ -78,10 +79,10 @@ def sync(func):
         t2 = task2()
         t3 = task3() # Only runs when task1 and task2 finished.
     """
-
     @wraps(func)
     def _inner(*args, **kwargs):
-        import threading, time
+        import threading
+        import time
         while threading.activeCount() > 1:
             time.sleep(1)
         return func(*args, **kwargs)

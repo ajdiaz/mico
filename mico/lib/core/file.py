@@ -32,7 +32,7 @@ def file_attribs(location, mode=None, owner=None, group=None, recursive=False):
     recursive = recursive and "-R " or ""
     _x = None
     if mode:
-        _x = run('chmod %s %s "%s"' % (recursive, mode,  location))[0]
+        _x = run('chmod %s %s "%s"' % (recursive, mode, location))[0]
         mico.output.info("set attributes for %s to %s" % (location, mode))
     if owner:
         _x = run('chown %s %s "%s"' % (recursive, owner, location))[0]
@@ -43,9 +43,11 @@ def file_attribs(location, mode=None, owner=None, group=None, recursive=False):
 
     return _x
 
+
 from mico.lib.core.dir import dir_ensure
 
 from mico.lib.core.local import *
+
 
 def file_local_read(location):
     """Reads a *local* file from the given location, expanding '~' and
@@ -53,6 +55,7 @@ def file_local_read(location):
     """
     with file(os.path.expandvars(os.path.expanduser(location)), "rb") as f:
         return f.read()
+
 
 def file_read(location):
     """Reads the *remote* file at the given location.
@@ -65,22 +68,27 @@ def file_read(location):
         if _exe.return_code == 0:
             return base64.b64decode(_exe)
 
+
 def file_exists(location):
     """Tests if there is a *remote* file at the given location."""
     _exe = run("test -e '%s'" % (location), force=True)[0]
     return _exe.return_code == 0
 
+
 def file_is_file(location):
     _exe = run("test -f '%s'" % (location))[0]
     return _exe.return_code == 0
+
 
 def file_is_dir(location):
     _exe = run("test -d '%s'" % (location))[0]
     return _exe.return_code == 0
 
+
 def file_is_link(location):
     _exe = run("test -L '%s'" % (location))[0]
     return _exe.return_code == 0
+
 
 def file_attribs_get(location):
     """Return mode, owner, and group for remote path.
@@ -97,6 +105,7 @@ def file_attribs_get(location):
     else:
         return None
 
+
 def file_md5(location):
     """Returns the MD5 sum (as a hex string) for the remote file at the given location.
 
@@ -109,6 +118,7 @@ def file_md5(location):
     if sig.return_code == 0:
         return sig.split(os.linesep)[-1].strip()
 
+
 def file_sha256(location):
     """Returns the SHA256 sum (as a hex string) for the remote file at the given location.
 
@@ -120,6 +130,10 @@ def file_sha256(location):
     sig = run('shasum -a 256 "%s" | cut -d" " -f1' % (location))[0]
     if sig.return_code == 0:
         return sig.split(os.linesep)[-1].strip()
+
+
+from mico import run
+
 
 def file_write(location, content, mode=None, owner=None, group=None, check=True):
     """Writes the given content to the file at the given remote
@@ -135,14 +149,17 @@ def file_write(location, content, mode=None, owner=None, group=None, check=True)
     # Upload the content if necessary
     if sig != file_md5(location):
         if is_local():
-            run("cp '%s' '%s'"%(lpath,location))
+            result = run("cp '%s' '%s'" % (lpath, location))
         else:
             # FIXME: Put is not working properly, I often get stuff like:
-            # Fatal error: sudo() encountered an error (return code 1) while executing 'mv "3dcf7213c3032c812769e7f355e657b2df06b687" "/etc/authbind/byport/80"'
+            # Fatal error: sudo() encountered an error (return code 1)
+            #  while executing 'mv "3dcf7213c3032c812769e7f355e657b2df06b687" "/etc/authbind/byport/80"'
             #fabric.operations.put(local_path, location, use_sudo=use_sudo)
             # Hides the output, which is especially important
             # See: http://unix.stackexchange.com/questions/22834/how-to-uncompress-zlib-data-in-unix
             result = run("echo '%s' | openssl base64 -A -d -out '%s'" % (base64.b64encode(content), location))[0]
+        if result != 0:
+            raise ExecutionError("Error when in copy operation")
     # Remove the local temp file
     os.fsync(fd)
     os.close(fd)
@@ -151,22 +168,25 @@ def file_write(location, content, mode=None, owner=None, group=None, check=True)
     if check:
         file_sig = file_md5(location)
         if file_sig != sig:
-            raise ExecutionError("Signature for '%s' does not match: got %s, expects %s" % (location, repr(file_sig), repr(sig)))
+            raise ExecutionError("Signature for '%s' does not match: got %s, expects %s" %
+                                                         (location, repr(file_sig), repr(sig)))
 
-    _x =  file_attribs(location, mode=mode, owner=owner, group=group)
+    _x = file_attribs(location, mode=mode, owner=owner, group=group)
     mico.output.info("created file %s" % (location, ))
     return _x
+
 
 def file_ensure(location, mode=None, owner=None, group=None):
     """Updates the mode/owner/group for the remote file at the given
     location.
     """
     if file_exists(location):
-        return file_attribs(location,mode=mode,owner=owner,group=group)
+        return file_attribs(location, mode=mode, owner=owner, group=group)
     else:
-        return file_write(location,"",mode=mode,owner=owner,group=group)
+        return file_write(location, "", mode=mode, owner=owner, group=group)
 
-def file_update(location, updater=lambda x:x):
+
+def file_update(location, updater=lambda x: x):
     """Updates the content of the given by passing the existing
     content of the remote file at the given location to the 'updater'
     function.
@@ -184,6 +204,7 @@ def file_update(location, updater=lambda x:x):
     mico.output.info("updated %d bytes into file %s" % (len(new_content), location, ))
     return _x
 
+
 def file_append(location, content, mode=None, owner=None, group=None):
     """Appends the given content to the remote file at the given
     location, optionally updating its mode/owner/group.
@@ -193,12 +214,14 @@ def file_append(location, content, mode=None, owner=None, group=None):
     mico.output.info("appended %d bytes into file %s" % (len(content), location, ))
     return _x
 
+
 def file_unlink(path):
     """Unlink or remove a file"""
     if file_exists(path):
         _x = run("unlink '%s'" % (path))[0]
         mico.output.info("removed file %s" % (location, ))
         return _x
+
 
 def file_link(source, destination, symbolic=True, mode=None, owner=None, group=None):
     """Creates a (symbolic) link between source and destination on the remote host,
@@ -264,7 +287,7 @@ def file_content(src, dst, env={}, mode=None, owner=None, group=None,
     jinja_env = Environment(loader=FileSystemLoader([os.path.dirname(src)]))
     jinja_tpl = jinja_env.get_template(os.path.basename(src))
 
-    local_env = dict([ (k,v) for (k,v) in __builtin__.env.items() ])
+    local_env = dict([(k, v) for (k, v) in __builtin__.env.items()])
     local_env.update(env)
 
     content = jinja_tpl.render(**local_env)
@@ -274,7 +297,7 @@ def file_content(src, dst, env={}, mode=None, owner=None, group=None,
             group=group)
 
     if file_exists(dst):
-        original  = file_read(dst)
+        original = file_read(dst)
         orig_attr = file_attribs_get(dst)
 
         if override_mode and mode:
@@ -284,8 +307,8 @@ def file_content(src, dst, env={}, mode=None, owner=None, group=None,
         if override_group and group:
             orig_attr["group"] = group
     else:
-        original  = ""
-        orig_attr = { "mode":mode, "group":group, "owner":owner }
+        original = ""
+        orig_attr = {"mode": mode, "group": group, "owner": owner}
 
     hash_original = hashlib.sha1(original).hexdigest()
     print local_env

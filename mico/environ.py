@@ -11,7 +11,7 @@ Also, this module provides a decorator to create new environment
 properties.
 """
 
-import sys
+import mico
 
 from mico.decorators import environ
 
@@ -35,6 +35,8 @@ def _env_kernel():
 def _env_operation_system():
     """Get the Operating System of the remote host.
     """
+    from __builtin__ import env
+
     # TODO: Add other operating systems here...
     if env.custom.kernel == "linux":
         if file_exists("/etc/lsb-release"):

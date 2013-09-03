@@ -6,6 +6,8 @@
 directories in the remote host."""
 
 import mico.output
+from mico import run
+
 
 def dir_attribs(location, mode=None, owner=None, group=None, recursive=False):
     """Updates the mode/owner/group for the given remote directory.
@@ -13,10 +15,12 @@ def dir_attribs(location, mode=None, owner=None, group=None, recursive=False):
     from mico.lib.core.file import file_attribs
     return file_attribs(location, mode=mode, owner=owner, group=group, recursive=recursive)
 
+
 def dir_exists(location):
     """Tells if there is a remote directory at the given location.
     """
     return (run("test -d '%s'" % location, force=True)[0].return_code == 0)
+
 
 def dir_remove(location, recursive=True):
     """Removes a directory
@@ -25,6 +29,7 @@ def dir_remove(location, recursive=True):
         _x = run("rm -%sf '%s'" % (recursive and "-r" or "", location))[0]
         mico.output.info("removed directory %s" % location)
         return _x
+
 
 def dir_ensure(location, recursive=True, mode=None, owner=None, group=None):
     """Ensures that there is a remote directory at the given location,

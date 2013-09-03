@@ -9,8 +9,8 @@ try:
     from setuptools import setup
     extra = dict(test_suite="tests.test.suite", include_package_data=True)
 except ImportError:
-    from distutils.core import setup
     extra = {}
+
 
 def parse_requirements(file_name):
     requirements = []
@@ -41,16 +41,16 @@ def get_file_contents(filename):
     return content
 
 setup(
-    name = "mico",
-    version = "0.1",
-    description = "A monkey driven cloud management",
+    name="mico",
+    version="0.1",
+    description="A monkey driven cloud management",
     author='Andres J. Diaz',
     author_email='ajdiaz@connectical.com',
     url='http://ajdiaz.github.com/mico',
     packages=find_packages(),
-    install_requires = parse_requirements('requirements.txt'),
-    dependency_links = parse_dependency_links('requirements.txt'),
-    license = "GPL",
+    install_requires=parse_requirements('requirements.txt'),
+    dependency_links=parse_dependency_links('requirements.txt'),
+    license="GPL",
     entry_points={
         'console_scripts': [
             'mico = mico.script.cmdline:main',

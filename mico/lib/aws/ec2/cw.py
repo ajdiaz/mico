@@ -15,6 +15,9 @@ from mico.lib.aws.ec2 import EC2LibraryError
 
 import boto.ec2.cloudwatch
 
+from mico import env
+
+
 def cw_connect(region=None, *args, **kwargs):
     """Helper to connect to Amazon Web Services EC2, using identify provided
     by environment, as also optional region in arguments.
@@ -34,7 +37,7 @@ def cw_connect(region=None, *args, **kwargs):
     connection = CloudWatchConnection(
             os_environ.get("AWS_ACCESS_KEY_ID"),
             os_environ.get("AWS_SECRET_ACCESS_KEY"),
-            region = region
+            region=region
     )
 
     return connection
@@ -58,8 +61,7 @@ def _cw_define(name, alarm_actions=[], *args, **kwargs):
     if "namespace" not in kwargs:
         kwargs["namespace"] = "AWS/EC2"
 
-
-    _x = MetricAlarm(name = name, alarm_actions = alarm_actions, *args, **kwargs)
+    _x = MetricAlarm(name=name, alarm_actions=alarm_actions, *args, **kwargs)
 
     # XXX: boto does not handle very well the alarm_actions list when the
     # same connection is used for two different cloudwatch alarms, so the
@@ -72,6 +74,7 @@ def _cw_define(name, alarm_actions=[], *args, **kwargs):
         _x.add_alarm_action(action.policy_arn)
 
     return _x
+
 
 def cw_ensure(name, alarm_actions=[], *args, **kwargs):
     """
@@ -124,11 +127,11 @@ def cw_ensure(name, alarm_actions=[], *args, **kwargs):
     mico.output.info("create alarm %s" % name)
     return alarm
 
+
 def cw_delete(*args):
     """Delete alarms passed in arguments.
     """
 
-    cw_connection = cw_connect()
     for arg in args:
         boto.ec2.cloudwatch.delete_alarms([arg])
         mico.output.info("remove alarm %s" % arg)
