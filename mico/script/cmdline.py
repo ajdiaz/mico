@@ -16,10 +16,6 @@ import mico.output
 
 from mico.stack import Stack
 
-from mico import execute
-
-from __builtin__ import env, split
-
 
 class MicoCmdline(cmd.Cmd):
     """The command line console which will be invoked from mico script."""
@@ -193,8 +189,10 @@ class MicoCmdline(cmd.Cmd):
         try:
             mod, fun = Stack.load(mod, [fun])
         except ImportError, e:
+            raise
             mico.output.error("stack '%s' not found: %s." % (mod, e, ))
         except AttributeError, e:
+            raise
             mico.output.error("entry point '%s' not found in stack '%s': %s" % (fun, mod, e, ))
         else:
             execute(fun, False, *tuple(lexer[1:]))

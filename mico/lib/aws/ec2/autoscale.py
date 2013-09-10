@@ -25,10 +25,6 @@ from mico.lib.aws.ec2.cw import cw_connect
 from mico.lib.aws.ec2.cw import _cw_define
 from mico.lib.aws.ec2.cw import cw_exists
 
-from mico import lock
-from mico import env
-
-
 @lock
 def _as_get_timestamp():
     # TODO: In the future this function will be in utils package.

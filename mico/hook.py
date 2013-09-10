@@ -8,9 +8,6 @@ support post action hooks."""
 from functools import wraps
 
 import mico.output
-import mico.run
-
-import mico.env
 
 # global variable for add_hooks()
 parent_task_name = ''

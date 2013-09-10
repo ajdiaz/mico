@@ -5,9 +5,6 @@
 """The ulimit core submodule provide a useful way to manage system
 ulimits."""
 
-from mico import run
-
-
 def ulimit_ensure(limits):
     """Ensure user limits.
 

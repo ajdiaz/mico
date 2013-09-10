@@ -7,7 +7,6 @@
 """
 
 import sys
-import mico.run
 import mico.output
 
 from mico.lib.aws.ec2 import *

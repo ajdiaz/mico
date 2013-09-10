@@ -6,10 +6,6 @@
 packages and package repositories into a host using yum utility.
 """
 
-from __builtin__ import run
-from Runtime import ExecutionError
-
-
 def repository_ensure(repository):
     """Ensure that a yum repo is present.
     """

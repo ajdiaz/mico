@@ -7,10 +7,6 @@ packages and package repositories into a host using yum utility."""
 
 import hashlib
 
-from __builtin__ import run
-from Runtime import ExecutionError
-
-
 def repository_ensure(repository, key):
     """Ensure that an APT repository exists.
     """

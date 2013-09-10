@@ -6,8 +6,6 @@
 groups in the remote host."""
 
 import mico.output
-from __builtin__ import run, group_check
-from Runtime import ExecutionError
 
 
 def group_create(name, gid=None):

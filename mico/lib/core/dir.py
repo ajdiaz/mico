@@ -6,7 +6,6 @@
 directories in the remote host."""
 
 import mico.output
-from mico import run
 
 
 def dir_attribs(location, mode=None, owner=None, group=None, recursive=False):

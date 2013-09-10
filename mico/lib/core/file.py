@@ -132,9 +132,6 @@ def file_sha256(location):
         return sig.split(os.linesep)[-1].strip()
 
 
-from mico import run
-
-
 def file_write(location, content, mode=None, owner=None, group=None, check=True):
     """Writes the given content to the file at the given remote
     location, optionally setting mode/owner/group.

@@ -6,7 +6,6 @@
 in sudo mode."""
 
 from mico.util.switch import Switcher
-from __builtin__ import env, run
 
 ENV_KEY_SUDO_PASSWORD = "sudo_password"
 ENV_KEY_SUDO_MODE = "sudo_mode"

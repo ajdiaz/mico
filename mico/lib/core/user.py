@@ -11,10 +11,6 @@ import base64
 import mico.output
 from mico.lib.core.group import group_exists
 
-from __builtin__ import run, group_check
-from Runtime import ExecutionError
-
-
 def user_password(name, password, encrypted_password=False):
     """Sets the given user password.
     """

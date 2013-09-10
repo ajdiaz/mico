@@ -12,8 +12,6 @@ from mico.lib.core.dir import dir_ensure
 from mico.lib.core.user import user_exists
 from mico.lib.core.file import file_attribs, file_exists, \
                                file_read, file_append, file_write
-from __builtin__ import run
-from Runtime import ExecutionError
 
 
 def ssh_keygen(user, key_type="rsa"):
