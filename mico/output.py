@@ -93,40 +93,49 @@ def label():
 def stack():
     return inspect.stack()[2][3]
 
+def fmessage(message):
+    return repr(message)
+
 
 def abort(message):
     if "abort" in env.loglevel:
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
+                label(), stack(), fmessage(message))
     return message
 
 
 def error(message, *args, **kwargs):
     if "error" in env.loglevel:
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err, label(), stack(), message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_err,
+                label(), stack(), fmessage(message))
     return message
 
 
 def warn(message):
     if "warn" in env.loglevel:
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
+                label(), stack(), fmessage(message))
     return message
 
 
 def puts(message, *args, **kwargs):
     if "info" in env.loglevel:
-        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf, label(), stack(), message)
+        print >> sys.stderr, "%s[0;1m%s:[0;0m %s: %s" % (prompt_inf,
+                label(), stack(), fmessage(message))
     return message
 
 
 def info(message, *args, **kwargs):
     if "info" in env.loglevel:
-        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg, label(), stack(), message)
+        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_msg,
+                label(), stack(), fmessage(message))
     return message
 
 
 def debug(message):
     if "debug" in env.loglevel:
-        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg, label(), stack(), message)
+        print >> sys.stdout, "%s[0;1m%s:[0;0m %s: %s" % (prompt_dbg,
+                label(), stack(), fmessage(message))
     return message
 
 
