@@ -19,7 +19,7 @@ from boto.ec2 import get_region
 from boto.ec2.connection import EC2Connection
 
 import mico.output
-
+from mico.util.dicts import AttrDict
 
 class EC2LibraryError(Exception):
     """Model an exception related with EC2 API."""
@@ -307,6 +307,24 @@ def ec2_list(*args):
                     if fnmatch(instance.tags["Name"], arg):
                         instance.name = instance.tags["Name"]
                         yield instance
+
+def ec2_events():
+    """Return pending events in EC2"""
+    conn = ec2_connect()
+    stats = conn.get_all_instance_status()
+    l = []
+    for stat in stats:
+        if stat.events:
+           for ev in stat.events:
+               if "Completed" not in ev.description:
+                   ev.name = conn.get_all_instances([stat.id])[0].instances[0].tags.get("Name", "%s" % stat.id)
+                   ev.id = stat.id
+                   ev.zone = stat.zone
+                   ev.status = stat.state_name
+                   ev.begin = ev.not_before
+                   ev.end = ev.not_after
+                   l.append(ev)
+    return l
 
 ec2_launch = ec2_create = ec2_run = ec2_ensure
 

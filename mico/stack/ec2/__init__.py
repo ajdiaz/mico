@@ -90,6 +90,12 @@ def run(*args):
     if len(env.roledefs['mico']) > 0:
         mico.run.run(" ".join(args[1:]))
 
+def events(*args):
+    """Print pending events in EC2"""
+    for x in ec2_events():
+        print(dir(x))
+        mico.output.dump(x, layout=env.get("layout", "vertical"))
+
 
 def main(*args):
     if len(args) > 0:

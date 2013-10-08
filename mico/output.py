@@ -64,6 +64,7 @@ dump_keys = [
         '_state', 'root_device_type', 'instance_type',
         'image_id', '_placement', 'secgroups', 'ip_address',
         'ttl', 'resource_records', 'launch_time', 'paused',
+        'begin', 'end'
 ]
 
 prompt_usr = os.environ.get("MICO_PS1", None) or "[0;1mmico[1;34m:[0;0m "
