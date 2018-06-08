@@ -5,11 +5,11 @@ Mico is a tool-toy to manage a number of hosts deployed in cloud services
 (currently only support Amazon AWS), and also allows you to deploy new hosts
 with specified template or create autoscaling groups and manage them easily.
 
-.. image:: https://pypip.in/v/mico/badge.png
+.. image:: https://img.shields.io/pypi/v/mico.svg
     :target: https://crate.io/packages/mico/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/mico/badge.png
+.. image:: https://img.shields.io/pypi/dm/mico.svg
     :target: https://crate.io/packages/mico/
     :alt: Number of PyPI downloads
 
